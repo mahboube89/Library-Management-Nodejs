@@ -6,7 +6,7 @@
             "username": "alice123",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "ADMIN"
         },
@@ -16,7 +16,7 @@
             "username": "bob_smith",
             "penalty": {
                 "reason": "Late book return",
-                "fine": 5.00
+                "fine": 5
             },
             "role": "USER"
         },
@@ -26,7 +26,7 @@
             "username": "charlie_d",
             "penalty": {
                 "reason": "Lost book",
-                "fine": 20.00
+                "fine": 20
             },
             "role": "USER"
         },
@@ -36,7 +36,7 @@
             "username": "dianaC",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "USER"
         },
@@ -46,7 +46,7 @@
             "username": "eve_m",
             "penalty": {
                 "reason": "Damaged book",
-                "fine": 10.00
+                "fine": 10
             },
             "role": "USER"
         },
@@ -56,7 +56,7 @@
             "username": "frank_g",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "ADMIN"
         },
@@ -66,7 +66,7 @@
             "username": "graceH",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "USER"
         },
@@ -76,7 +76,7 @@
             "username": "hank_w",
             "penalty": {
                 "reason": "Late book return",
-                "fine": 3.50
+                "fine": 3.5
             },
             "role": "USER"
         },
@@ -86,7 +86,7 @@
             "username": "ivyS",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "USER"
         },
@@ -96,7 +96,7 @@
             "username": "jack_t",
             "penalty": {
                 "reason": "None",
-                "fine": 0.00
+                "fine": 0
             },
             "role": "ADMIN"
         }
@@ -120,14 +120,14 @@
             "id": 3,
             "title": "To Kill a Mockingbird",
             "author": "Harper Lee",
-            "price": 12.50,
+            "price": 12.5,
             "is-available": 1
         },
         {
             "id": 4,
             "title": "Moby-Dick",
             "author": "Herman Melville",
-            "price": 15.00,
+            "price": 15,
             "is-available": 0
         },
         {
@@ -141,7 +141,7 @@
             "id": 6,
             "title": "Brave New World",
             "author": "Aldous Huxley",
-            "price": 9.50,
+            "price": 9.5,
             "is-available": 1
         },
         {
@@ -162,14 +162,14 @@
             "id": 9,
             "title": "The Hobbit",
             "author": "J.R.R. Tolkien",
-            "price": 11.00,
+            "price": 11,
             "is-available": 1
         },
         {
             "id": 10,
             "title": "Free eBook: How to Code",
             "author": "John Doe",
-            "price": 0.00,
+            "price": 0,
             "is-available": 1
         }
     ]
