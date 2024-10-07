@@ -1,0 +1,176 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "Alice Johnson",
+            "username": "alice123",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "ADMIN"
+        },
+        {
+            "id": 2,
+            "name": "Bob Smith",
+            "username": "bob_smith",
+            "penalty": {
+                "reason": "Late book return",
+                "fine": 5.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 3,
+            "name": "Charlie Davis",
+            "username": "charlie_d",
+            "penalty": {
+                "reason": "Lost book",
+                "fine": 20.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 4,
+            "name": "Diana Clark",
+            "username": "dianaC",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 5,
+            "name": "Eve Martinez",
+            "username": "eve_m",
+            "penalty": {
+                "reason": "Damaged book",
+                "fine": 10.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 6,
+            "name": "Frank Green",
+            "username": "frank_g",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "ADMIN"
+        },
+        {
+            "id": 7,
+            "name": "Grace Hopper",
+            "username": "graceH",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 8,
+            "name": "Hank Williams",
+            "username": "hank_w",
+            "penalty": {
+                "reason": "Late book return",
+                "fine": 3.50
+            },
+            "role": "USER"
+        },
+        {
+            "id": 9,
+            "name": "Ivy Stone",
+            "username": "ivyS",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "USER"
+        },
+        {
+            "id": 10,
+            "name": "Jack Thomas",
+            "username": "jack_t",
+            "penalty": {
+                "reason": "None",
+                "fine": 0.00
+            },
+            "role": "ADMIN"
+        }
+    ],
+    "books": [
+        {
+            "id": 1,
+            "title": "The Great Gatsby",
+            "author": "F. Scott Fitzgerald",
+            "price": 10.99,
+            "is-available": 1
+        },
+        {
+            "id": 2,
+            "title": "1984",
+            "author": "George Orwell",
+            "price": 8.99,
+            "is-available": 1
+        },
+        {
+            "id": 3,
+            "title": "To Kill a Mockingbird",
+            "author": "Harper Lee",
+            "price": 12.50,
+            "is-available": 1
+        },
+        {
+            "id": 4,
+            "title": "Moby-Dick",
+            "author": "Herman Melville",
+            "price": 15.00,
+            "is-available": 0
+        },
+        {
+            "id": 5,
+            "title": "Pride and Prejudice",
+            "author": "Jane Austen",
+            "price": 7.99,
+            "is-available": 1
+        },
+        {
+            "id": 6,
+            "title": "Brave New World",
+            "author": "Aldous Huxley",
+            "price": 9.50,
+            "is-available": 1
+        },
+        {
+            "id": 7,
+            "title": "The Catcher in the Rye",
+            "author": "J.D. Salinger",
+            "price": 6.99,
+            "is-available": 1
+        },
+        {
+            "id": 8,
+            "title": "War and Peace",
+            "author": "Leo Tolstoy",
+            "price": 13.99,
+            "is-available": 0
+        },
+        {
+            "id": 9,
+            "title": "The Hobbit",
+            "author": "J.R.R. Tolkien",
+            "price": 11.00,
+            "is-available": 1
+        },
+        {
+            "id": 10,
+            "title": "Free eBook: How to Code",
+            "author": "John Doe",
+            "price": 0.00,
+            "is-available": 1
+        }
+    ]
+}
