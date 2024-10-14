@@ -107,70 +107,98 @@
             "title": "The Great Gatsby",
             "author": "F. Scott Fitzgerald",
             "price": 10.99,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 2,
             "title": "1984",
             "author": "George Orwell",
             "price": 8.99,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 3,
             "title": "To Kill a Mockingbird",
             "author": "Harper Lee",
             "price": 12.5,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 4,
             "title": "Moby-Dick",
             "author": "Herman Melville",
             "price": 15,
-            "is-available": 0
+            "is_available": 0
         },
         {
             "id": 5,
             "title": "Pride and Prejudice",
             "author": "Jane Austen",
             "price": 7.99,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 6,
             "title": "Brave New World",
             "author": "Aldous Huxley",
             "price": 9.5,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 7,
             "title": "The Catcher in the Rye",
             "author": "J.D. Salinger",
             "price": 6.99,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 8,
             "title": "War and Peace",
             "author": "Leo Tolstoy",
             "price": 13.99,
-            "is-available": 0
+            "is_available": 0
         },
         {
             "id": 9,
             "title": "The Hobbit",
             "author": "J.R.R. Tolkien",
             "price": 11,
-            "is-available": 1
+            "is_available": 1
         },
         {
             "id": 10,
             "title": "Free eBook: How to Code",
             "author": "John Doe",
             "price": 0,
-            "is-available": 1
+            "is_available": 1
+        },
+        {
+            "id": "ab0bd44c-f0b0-41e8-926f-eb2feb9c0d09",
+            "title": "Harry Potter",
+            "author": " J.K. Rowling",
+            "price": 12.99,
+            "is_available": 1
+        },
+        {
+            "id": "a1ea62ab-8478-4013-a63d-acaa15c84a74",
+            "title": "Harry Potter",
+            "author": " J.K. Rowling",
+            "price": 12.99,
+            "is_available": 1
+        },
+        {
+            "id": "68bb87a9-df97-40b4-b709-677d058e98d8",
+            "title": "Harry Potter",
+            "author": " J.K. Rowling",
+            "price": 12.99,
+            "is_available": 1
+        },
+        {
+            "id": "4240b7fd-1a15-4772-bfd8-71e0c98657a0",
+            "title": "The Lord of the Rings",
+            "author": "J.R.R. Tolkien",
+            "price": 14.99,
+            "is_available": 1
         }
     ]
 }
