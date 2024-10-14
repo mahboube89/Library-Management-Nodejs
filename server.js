@@ -141,6 +141,82 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    // Handle PUT request for editing a book
+    else if (req.method === "PUT" && req.url.startsWith("/api/books")) {
+
+        // Extract the bookId from the query string
+        const parsedUrl = url.parse(req.url, true);
+        const bookId = parsedUrl.query.id;
+
+        // Collect incoming data
+        let newBookDetails = "";
+        req.on("data", (data) => {
+            newBookDetails = newBookDetails + data.toString();
+        });
+
+        req.on("end", ()=> {
+
+            try {
+
+                // Parse and update the book details
+                const reqBody = JSON.parse(newBookDetails);
+    
+                // Validate that title, author, and price are present
+                if (!reqBody.title || !reqBody.author || reqBody.price === undefined) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.write(JSON.stringify({ message: "Missing title, author, or price." }));
+                    res.end();
+                    return;
+                }
+    
+                // Validate that price is a number and non-negative
+                if (typeof reqBody.price !== 'number' || reqBody.price < 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.write(JSON.stringify({ message: "Price must be a non-negative number." }));
+                    res.end();
+                    return;
+                }
+                
+                let bookFound = false;
+    
+                db.books.forEach((book) => {
+                    if (book.id === Number(bookId)) {
+                        book.title = reqBody.title;
+                        book.author = reqBody.author;
+                        book.price = reqBody.price;
+                        bookFound = true;
+                    }
+                });
+    
+    
+                if (!bookFound) {
+                    res.writeHead(404, { "Content-Type": "application/json" });
+                    res.write(JSON.stringify({ message: "Book not found." }));
+                    res.end();
+                    return;
+                }
+    
+                // Write updated book data to db.json
+                fs.writeFile("db.json", JSON.stringify(db), (err) => {
+                    if (err) {
+                        throw err
+                    }
+    
+                    // Respond with success message
+                    res.writeHead(200, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "New book updated successfully."}));
+                    res.end();
+                });
+
+            } catch (err) {
+                res.writeHead(400, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Invalid JSON data."}));
+                res.end();
+            }
+
+        });
+    }
+
 });
 
 // Start the server on port 4000

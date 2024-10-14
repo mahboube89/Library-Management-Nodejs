@@ -169,7 +169,7 @@
             "id": 10,
             "title": "Free eBook: How to Code",
             "author": "John Doe",
-            "price": 0,
+            "price": 19.89,
             "is_available": 1
         },
         {
@@ -198,6 +198,13 @@
             "title": "The Lord of the Rings",
             "author": "J.R.R. Tolkien",
             "price": 14.99,
+            "is_available": 1
+        },
+        {
+            "id": "bb5c22ae-1763-4491-be10-4916163bd1cb",
+            "title": "Moby-Dick",
+            "author": "Herman Melville",
+            "price": 0,
             "is_available": 1
         }
     ]
