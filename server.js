@@ -288,6 +288,64 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    // Handle PUT request for updating role to ADMIN
+    else if(req.method === "PUT" && req.url.startsWith("/api/users/upgrade")) {
+        const parsedUrl = url.parse(req.url, true);
+        const userId = parsedUrl.query.id;
+
+        if(!userId) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "User ID is required." }));
+            res.end();
+            return;
+        }
+
+        let userFound = false;
+        let roleUpdated = false;
+
+        db.users.forEach((user) => {
+            if(user.id === Number(userId)) {   
+                userFound = true;
+                
+                if (user.role === "ADMIN") {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.write(JSON.stringify({ message: "User is already an ADMIN." }));
+                    res.end();
+                    return;
+                }
+
+                user.role = "ADMIN";
+                roleUpdated = true;
+            }
+        });
+
+        // If user is not found, return 404
+        if (!userFound) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "User not found." }));
+            res.end();
+            return;
+        }
+
+        if(roleUpdated) {
+            // Write the updated database back to 'db.json'
+            fs.writeFile("db.json", JSON.stringify(db, null, 2), (err) => {
+                if (err) {
+                    throw err
+                }
+    
+                res.writeHead(200, {"Content-Type": "application/json"});
+                res.write(
+                    JSON.stringify({message: "Role updated successfully."})
+                );
+                res.end();
+    
+            });
+        }
+
+    }
+
+    // Handle PUT request for update penalty for a user
     else if(req.method === "PUT" && req.url.startsWith("/api/users")) {
 
         const parsedUrl = url.parse(req.url, true);

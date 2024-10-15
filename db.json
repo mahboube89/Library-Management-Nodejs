@@ -86,7 +86,7 @@
         "reason": "Late book return",
         "fine": 3.5
       },
-      "role": "USER"
+      "role": "ADMIN"
     },
     {
       "id": 9,
