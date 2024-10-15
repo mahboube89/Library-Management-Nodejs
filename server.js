@@ -87,7 +87,7 @@ const server = http.createServer((req, res) => {
 
         // Receive incoming book data
         req.on("data", (data) => {
-            book = book + data.toString();         
+            book += data.toString();         
         });
 
         // Once the data has been fully received
@@ -114,7 +114,7 @@ const server = http.createServer((req, res) => {
                 }
 
                 // Create a new book object with a unique ID and 'is_available' flag set to 1
-                const newBook = {id: crypto.randomUUID(), ...JSON.parse(book), is_available: 1};
+                const newBook = {id: crypto.randomUUID(), ...bookData, is_available: 1};
 
                 // Add the new book to the db
                 db.books.push(newBook);
@@ -217,10 +217,69 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    else if (req.method === "POST" && req.url.startsWith("/api/users")) {
+
+        let user = ""
+
+        // Receive incoming book data
+        req.on("data", (data) => {
+            user += data.toString();         
+        });
+
+        req.on("end", () => {
+
+            try {
+                // Parse the incoming JSON data
+                const userData = JSON.parse(user);
+                console.log("JSON.parse(user):", userData);
+                
+                // Validate that 'name' and 'username' are present
+                if (!userData.username || !userData.email) {
+                    res.writeHead(400, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Missing username or email."}));
+                    res.end();
+                    return; // Stop further execution if validation fails
+                }
+
+                // Create a new user object with default values for penalty and role
+                const newUser = {
+                    id: crypto.randomUUID(),
+                    name: userData.name || "Anonymous",
+                    username: userData.username,
+                    email: userData.email,
+                    ...JSON.parse(user),
+                    "penalty": {"reason": "None","fine": 0},
+                    "role": "USER"
+                    };
+
+                db.users.push(newUser); // Add the new user to the db
+
+                // Write the updated database back to the 'db.json' file
+                fs.writeFile("db.json", JSON.stringify(db, null, 2), (err)=> {
+                    if (err) {
+                        throw err; // If there's an error saving the file, throw it
+                    }
+
+                    // Respond with success message
+                    res.writeHead(201, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "New user added successfully."}));
+                    res.end();
+                });
+
+            } catch (err) {
+
+                // Handle JSON parsing errors or other issues
+                res.writeHead(400, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Invalid JSON data"}));
+                res.end();
+            }
+
+        });
+    }
 });
 
 // Start the server on port 4000
 server.listen(4000, () => {
     console.log("Server is running on port 4000.");
 
-})
+});
