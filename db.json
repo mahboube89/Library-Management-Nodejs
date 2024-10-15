@@ -131,6 +131,17 @@
         "fine": 0
       },
       "role": "USER"
+    },
+    {
+      "id": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "name": "Anonymous",
+      "username": "Bibi",
+      "email": "Benyamin@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
     }
   ],
   "books": [

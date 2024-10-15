@@ -241,6 +241,17 @@ const server = http.createServer((req, res) => {
                     return; // Stop further execution if validation fails
                 }
 
+                const userExist = db.users.find((user)=>{
+                    return user.email === userData.email || user.username === userData.username
+                });
+
+                if(userExist) {
+                    res.writeHead(409, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Username or email already exist."}));
+                    res.end();
+                    return; // Stop further execution if validation fails
+                }
+
                 // Create a new user object with default values for penalty and role
                 const newUser = {
                     id: crypto.randomUUID(),
