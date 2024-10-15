@@ -141,6 +141,70 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    // Handle PUT request to update books availability
+    else if(req.method === "PUT" && req.url.startsWith("/api/books/return")) {
+        // Extract the bookId from the query string
+        const parsedUrl = url.parse(req.url, true);
+        const bookId = parsedUrl.query.id;
+
+        // Validate that bookId is provided
+        if (!bookId) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "Book ID is required." }));
+            res.end();
+            return;
+        }
+
+        let bookFound = false;
+        let bookAlreadyAvailable = false;
+
+        // Find the book and update its availability
+        db.books.forEach((book) => {
+            if (book.id === Number(bookId)) {
+
+                bookFound = true;
+
+                // Check if the book is already available
+                if (book.is_available === 1) {
+                    bookAlreadyAvailable = true;
+                    return;
+                }
+
+                // Mark the book as available
+                book.is_available = 1;
+            }
+        });
+
+        // Handle case where the book was not found
+        if (!bookFound) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "Book not found." }));
+            res.end();
+            return;
+        }
+
+        // Handle case where the book is already available
+        if (bookAlreadyAvailable) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "Book is already available." }));
+            res.end();
+            return;
+        }
+
+        // Write updated book data to db.json
+        fs.writeFile("db.json", JSON.stringify(db), (err) => {
+            if (err) {
+                throw err
+            }
+
+            // Respond with success message
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.write(JSON.stringify({message: "Book returned successfully."}));
+            res.end();
+        });
+
+    }
+
     // Handle PUT request for editing a book
     else if (req.method === "PUT" && req.url.startsWith("/api/books")) {
 
