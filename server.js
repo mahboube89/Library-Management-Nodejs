@@ -217,6 +217,7 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    // Handle POST request for adding a user
     else if (req.method === "POST" && req.url.startsWith("/api/users")) {
 
         let user = ""
@@ -231,7 +232,6 @@ const server = http.createServer((req, res) => {
             try {
                 // Parse the incoming JSON data
                 const userData = JSON.parse(user);
-                console.log("JSON.parse(user):", userData);
                 
                 // Validate that 'name' and 'username' are present
                 if (!userData.username || !userData.email) {
@@ -276,6 +276,74 @@ const server = http.createServer((req, res) => {
 
         });
     }
+
+    else if(req.method === "PUT" && req.url.startsWith("/api/users")) {
+
+        const parsedUrl = url.parse(req.url, true);
+        const userId = parsedUrl.query.id;
+        
+        let reqBody = "";
+
+        req.on("data", (data) => {
+            reqBody += data.toString();
+        });
+
+        req.on("end", () => {
+
+            try {
+
+                // Parse the incoming JSON data (should contain the 'penalty' object)
+                const penalty = JSON.parse(reqBody).penalty;
+
+                console.log(penalty);
+
+                // Ensure penalty data is present and valid
+                if (!penalty || !penalty.reason || penalty.fine === undefined) {
+                    res.writeHead(400, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Missing or invalid penalty data."}));
+                    res.end();
+                    return;
+                }
+                
+                let userFound = false;
+    
+                // Loop through users and update penalty for the correct user
+                db.users.forEach((user) => {
+                    if(user.id === Number(userId)) {
+                        user.penalty = penalty;
+                        userFound = true;
+                    }
+                });
+    
+                // Check if the user was found, if not, return 404
+                if (!userFound) {
+                    res.writeHead(404, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "User not found."}));
+                    res.end();
+                    return;
+                }
+
+                // Write the updated database back to 'db.json'
+                fs.writeFile("db.json", JSON.stringify(db, null, 2), (err) => {
+                    if (err) {
+                        throw err
+                    }
+    
+                    res.writeHead(200, {"Content-Type": "application/json"});
+                    res.write(
+                        JSON.stringify({message: "Penalty updated successfully."})
+                    );
+                    res.end();
+    
+                });
+            } catch (err) {
+                res.writeHead(400, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Invalid JSON data."}));
+                res.end();
+            }
+        });
+    }
+
 });
 
 // Start the server on port 4000

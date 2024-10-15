@@ -17,8 +17,8 @@
       "username": "bob_smith",
       "email": "b-s@gmail.com",
       "penalty": {
-        "reason": "Late book return",
-        "fine": 5
+        "reason": "Late return",
+        "fine": 50
       },
       "role": "USER"
     },
