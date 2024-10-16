@@ -4,7 +4,7 @@ const url = require("url");
 const crypto = require("crypto");
 
 const db = require("./db.json");
-const { freemem } = require("os");
+
 
 // Create the server
 const server = http.createServer((req, res) => {
@@ -281,12 +281,51 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    // Handle POST request to login a user
+    else if (req.method === "POST" && req.url.startsWith("/api/users/login")) {
+    
+        let user = "";
+
+        // Receive incoming user data
+        req.on("data", (data) => {
+            // Convert incoming buffer data to a string and append it to the user variable
+            user += data.toString();
+        });
+        
+        // Once all data has been received (end of request)
+        req.on("end", () => {
+
+            // Parse the JSON string into a JavaScript object
+            const {username, email} = JSON.parse(user)
+
+            // Find the user in the database by matching the username and email
+            const mainUser = db.users.find((user) => {
+                return user.username === username && user.email === email;
+            });
+
+            // If no user is found, return a 401 Unauthorized response
+            if(!mainUser) {
+                res.writeHead(401, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "User not found."}));
+                res.end();
+                return;
+            }
+
+            // If the user is found, return a 200 OK response with the username and email
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.write(JSON.stringify({username: mainUser.username, email: mainUser.email }));
+            res.end();
+            return;      
+
+        }); 
+    }
+
     // Handle POST request for adding a user
     else if (req.method === "POST" && req.url.startsWith("/api/users")) {
 
         let user = ""
 
-        // Receive incoming book data
+        // Receive incoming user data
         req.on("data", (data) => {
             user += data.toString();         
         });
@@ -311,7 +350,7 @@ const server = http.createServer((req, res) => {
 
                 if(userExist) {
                     res.writeHead(409, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Username or email already exist."}));
+                    res.write(JSON.stringify({message: "in adding user request , Username or email already exist."}));
                     res.end();
                     return; // Stop further execution if validation fails
                 }
@@ -351,7 +390,7 @@ const server = http.createServer((req, res) => {
 
         });
     }
-
+    
     // Handle PUT request for updating role to ADMIN
     else if(req.method === "PUT" && req.url.startsWith("/api/users/upgrade")) {
         const parsedUrl = url.parse(req.url, true);
@@ -477,6 +516,7 @@ const server = http.createServer((req, res) => {
         });
     }
 
+   
 });
 
 // Start the server on port 4000
