@@ -81,6 +81,83 @@ const server = http.createServer((req, res) => {
         });
     }
 
+    else if(req.method === "POST" && req.url.startsWith("/api/books/loan")) {
+
+        let reqBody = "";
+
+        // Receive incoming data
+        req.on("data", (data) => {
+            reqBody += data.toString();
+        });
+
+        req.on("end", () => {
+
+            try {
+
+                // Parse the request body to extract userId and bookId
+                let { userId, bookId, returnDate } = JSON.parse(reqBody);
+
+                // Check if the book exists in the database
+                const book = db.books.find((book) => book.id === bookId);
+
+                if (!book) {
+                    // If the book is not found, return a 404 Not Found error
+                    res.writeHead(404, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Book not found."}));
+                    res.end();
+                    return;
+                }
+                
+                // Check if the book is available (is_available === 1)
+                if (book.is_available !== 1) {
+                    res.writeHead(400, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Book is not available."}));
+                    res.end();
+                    return;
+                }
+
+                // Mark the book as unavailable
+                book.is_available = 0;
+
+                // Set the loan date to today
+                const loanDate = new Date();
+
+                // If returnDate is provided ("2024-11-01" format), use it; otherwise, set a default return date (14 days from the loan date)
+                returnDate = returnDate ? new Date(returnDate) : new Date(loanDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+                // Create a new loan transaction for the user and book
+                const userBookTransaction = {
+                    id: crypto.randomUUID(),
+                    userId,
+                        
+                    loanDate: loanDate.toISOString(),
+                    returnDate: returnDate.toISOString()
+                };
+                
+                // Add the new loan transaction to the userBookLoans array
+                db.userBookLoans.push(userBookTransaction);
+
+                // Write the updated db to the db.json file
+                fs.writeFile("db.json", JSON.stringify(db, null, 2), (err) => {
+
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.writeHead(201, {"Content-Type": "application/json"});
+                    res.write(JSON.stringify({message: "Book loaned successfully."}));
+                    res.end();
+
+                });
+                
+            } catch (err) {
+                res.writeHead(400, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Invalid JSON data."}));
+                res.end();
+            }
+        });
+    }
+
     // Handle POST request for adding a book
     else if (req.method === "POST" && req.url.startsWith("/api/books")) {
         let book = ""
@@ -515,6 +592,8 @@ const server = http.createServer((req, res) => {
             }
         });
     }
+
+    
 
    
 });
