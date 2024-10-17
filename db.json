@@ -149,7 +149,7 @@
       "id": "ab0bd44c-f0b0-41e8-926f-eb2feb9c0345",
       "title": "The Great Gatsby",
       "author": "F. Scott Fitzgerald",
-      "price": 10.99,
+      "price": 45,
       "is_available": 1
     },
     {
@@ -178,20 +178,6 @@
       "title": "War and Peace",
       "author": "Leo Tolstoy",
       "price": 13.99,
-      "is_available": 1
-    },
-    {
-      "id": "4240b7fd-1a15-4772-bfd8-71e0c98657a0",
-      "title": "The Lord of the Rings",
-      "author": "J.R.R. Tolkien",
-      "price": 14.99,
-      "is_available": 0
-    },
-    {
-      "id": "bb5c22ae-1763-4491-be10-4916163bd1cb",
-      "title": "Moby-Dick",
-      "author": "Herman Melville",
-      "price": 0,
       "is_available": 0
     }
   ],
@@ -209,6 +195,20 @@
       "bookId": "4240b7fd-1a15-4772-bfd8-71e0c98657a0",
       "loanDate": "2024-10-16T21:32:01.095Z",
       "returnDate": "2024-10-30T21:32:01.095Z"
+    },
+    {
+      "id": "7ae02bea-2733-4712-9b6f-d505c6374b13",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": 8,
+      "loanDate": "2024-10-17T20:54:58.670Z",
+      "returnDate": "2024-11-01T00:00:00.000Z"
+    },
+    {
+      "id": "959838ce-2266-415e-b78b-b830e25e81fb",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": "1ssssfwww22",
+      "loanDate": "2024-10-17T20:55:48.907Z",
+      "returnDate": "2024-10-31T20:55:48.907Z"
     }
   ]
 }

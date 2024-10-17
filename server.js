@@ -4,6 +4,8 @@ const url = require("url");
 const crypto = require("crypto");
 
 const db = require("./db.json");
+const bookController = require("./controllers/bookController");
+const loanController = require("./controllers/loanController");
 
 
 // Create the server
@@ -31,331 +33,32 @@ const server = http.createServer((req, res) => {
 
     // Handle GET request for fetching all books
     else if (req.method === "GET" && req.url === "/api/books") {
-        // Read the database file (db.json)
-        fs.readFile("db.json", (error, db) => {
-
-            if (error) {
-                throw error;
-            }
-
-            // Parse the JSON content of the file
-            const data = JSON.parse(db);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.write(JSON.stringify(data.books)); // Send books data as a response
-            res.end();
-
-        });
+        bookController.getAllBooks(req, res);
     }
 
     // Handle DELETE request for removing a book by ID
     else if (req.method === "DELETE" && req.url.startsWith("/api/books")) {
-        // Parse the request URL
-        const parsedUrl = url.parse(req.url, true); 
-           
-        // Get the book ID from the query string and convert to integer
-        const bookId = parseInt(parsedUrl.query.id);
-
-        // Filter out the book with the matching ID
-        const newBooks = db.books.filter((book) => book.id !== bookId);
-        
-        // Check if the book was not found (i.e., no books were removed)
-        if (newBooks.length === db.books.length) {
-            // Respond with a 404 status code if the book is not found
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "Book not found" }));
-            res.end();
-            return;
-        }
-
-        // Write the updated books array back to the db.json file
-        fs.writeFile('db.json', JSON.stringify({ ...db, books: newBooks }), (err) => {
-            
-            if (err) {
-                throw err;
-            }
-
-            // Respond with a success message after the book is removed
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "Book removed successfully" }));
-            res.end();
-        });
+        bookController.removeBookById(req, res);
     }
 
+    // Handle POST request to loan a book
     else if(req.method === "POST" && req.url.startsWith("/api/books/loan")) {
-
-        let reqBody = "";
-
-        // Receive incoming data
-        req.on("data", (data) => {
-            reqBody += data.toString();
-        });
-
-        req.on("end", () => {
-
-            try {
-
-                // Parse the request body to extract userId and bookId
-                let { userId, bookId, returnDate } = JSON.parse(reqBody);
-
-                // Check if the book exists in the database
-                const book = db.books.find((book) => book.id === bookId);
-
-                if (!book) {
-                    // If the book is not found, return a 404 Not Found error
-                    res.writeHead(404, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Book not found."}));
-                    res.end();
-                    return;
-                }
-                
-                // Check if the book is available (is_available === 1)
-                if (book.is_available !== 1) {
-                    res.writeHead(400, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Book is not available."}));
-                    res.end();
-                    return;
-                }
-
-                // Mark the book as unavailable
-                book.is_available = 0;
-
-                // Set the loan date to today
-                const loanDate = new Date();
-
-                // If returnDate is provided ("2024-11-01" format), use it; otherwise, set a default return date (14 days from the loan date)
-                returnDate = returnDate ? new Date(returnDate) : new Date(loanDate.getTime() + 14 * 24 * 60 * 60 * 1000);
-
-                // Create a new loan transaction for the user and book
-                const userBookTransaction = {
-                    id: crypto.randomUUID(),
-                    userId,
-                        
-                    loanDate: loanDate.toISOString(),
-                    returnDate: returnDate.toISOString()
-                };
-                
-                // Add the new loan transaction to the userBookLoans array
-                db.userBookLoans.push(userBookTransaction);
-
-                // Write the updated db to the db.json file
-                fs.writeFile("db.json", JSON.stringify(db, null, 2), (err) => {
-
-                    if (err) {
-                        throw err;
-                    }
-
-                    res.writeHead(201, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Book loaned successfully."}));
-                    res.end();
-
-                });
-                
-            } catch (err) {
-                res.writeHead(400, {"Content-Type": "application/json"});
-                res.write(JSON.stringify({message: "Invalid JSON data."}));
-                res.end();
-            }
-        });
+        loanController.loanBook(req, res);       
     }
 
     // Handle POST request for adding a book
     else if (req.method === "POST" && req.url.startsWith("/api/books")) {
-        let book = ""
-
-        // Receive incoming book data
-        req.on("data", (data) => {
-            book += data.toString();         
-        });
-
-        // Once the data has been fully received
-        req.on("end", ()=> {
-            try {
-
-                // Parse the incoming JSON data
-                const bookData = JSON.parse(book);
-
-                // Validate required fields: 'title', 'author', and 'price'
-                if(!bookData.title || !bookData.author || bookData.price == undefined) {
-                    res.writeHead(400, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Missing title, author, or price."}));
-                    res.end();
-                    return; // Stop further execution if validation fails
-                }
-
-                // Validate that price is a number and greater than 0
-                if (typeof bookData.price !== "number" || bookData.price < 0) {
-                    res.writeHead(400, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "Price must be a positive number."}));
-                    res.end();
-                    return;
-                }
-
-                // Create a new book object with a unique ID and 'is_available' flag set to 1
-                const newBook = {id: crypto.randomUUID(), ...bookData, is_available: 1};
-
-                // Add the new book to the db
-                db.books.push(newBook);
-
-                // Write the updated database back to the 'db.json' file
-                fs.writeFile("db.json", JSON.stringify(db, null, 2), (err)=> {
-                    if (err) {
-                        throw err; // If there's an error saving the file, throw it
-                    }
-
-                    // Respond with success message
-                    res.writeHead(201, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "New book added successfully."}));
-                    res.end();
-                });
-
-            } catch (err) {
-                // Handle JSON parsing errors or other issues
-                res.writeHead(400, {"Content-Type": "application/json"});
-                res.write(JSON.stringify({message: "Invalid JSON data"}));
-                res.end();
-            }
-            
-        });
+        bookController.addBook(req, res);
     }
 
-    // Handle PUT request to update books availability
+    // Handle PUT request to return a book
     else if(req.method === "PUT" && req.url.startsWith("/api/books/return")) {
-        // Extract the bookId from the query string
-        const parsedUrl = url.parse(req.url, true);
-        const bookId = parsedUrl.query.id;
-
-        // Validate that bookId is provided
-        if (!bookId) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "Book ID is required." }));
-            res.end();
-            return;
-        }
-
-        let bookFound = false;
-        let bookAlreadyAvailable = false;
-
-        // Find the book and update its availability
-        db.books.forEach((book) => {
-            if (book.id === Number(bookId)) {
-
-                bookFound = true;
-
-                // Check if the book is already available
-                if (book.is_available === 1) {
-                    bookAlreadyAvailable = true;
-                    return;
-                }
-
-                // Mark the book as available
-                book.is_available = 1;
-            }
-        });
-
-        // Handle case where the book was not found
-        if (!bookFound) {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "Book not found." }));
-            res.end();
-            return;
-        }
-
-        // Handle case where the book is already available
-        if (bookAlreadyAvailable) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "Book is already available." }));
-            res.end();
-            return;
-        }
-
-        // Write updated book data to db.json
-        fs.writeFile("db.json", JSON.stringify(db), (err) => {
-            if (err) {
-                throw err
-            }
-
-            // Respond with success message
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "Book returned successfully."}));
-            res.end();
-        });
-
+        loanController.returnBook(req, res);
     }
 
     // Handle PUT request for editing a book
     else if (req.method === "PUT" && req.url.startsWith("/api/books")) {
-
-        // Extract the bookId from the query string
-        const parsedUrl = url.parse(req.url, true);
-        const bookId = parsedUrl.query.id;
-
-        // Collect incoming data
-        let newBookDetails = "";
-        req.on("data", (data) => {
-            newBookDetails = newBookDetails + data.toString();
-        });
-
-        req.on("end", ()=> {
-
-            try {
-
-                // Parse and update the book details
-                const reqBody = JSON.parse(newBookDetails);
-    
-                // Validate that title, author, and price are present
-                if (!reqBody.title || !reqBody.author || reqBody.price === undefined) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.write(JSON.stringify({ message: "Missing title, author, or price." }));
-                    res.end();
-                    return;
-                }
-    
-                // Validate that price is a number and non-negative
-                if (typeof reqBody.price !== 'number' || reqBody.price < 0) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.write(JSON.stringify({ message: "Price must be a non-negative number." }));
-                    res.end();
-                    return;
-                }
-                
-                let bookFound = false;
-    
-                db.books.forEach((book) => {
-                    if (book.id === Number(bookId)) {
-                        book.title = reqBody.title;
-                        book.author = reqBody.author;
-                        book.price = reqBody.price;
-                        bookFound = true;
-                    }
-                });
-    
-    
-                if (!bookFound) {
-                    res.writeHead(404, { "Content-Type": "application/json" });
-                    res.write(JSON.stringify({ message: "Book not found." }));
-                    res.end();
-                    return;
-                }
-    
-                // Write updated book data to db.json
-                fs.writeFile("db.json", JSON.stringify(db), (err) => {
-                    if (err) {
-                        throw err
-                    }
-    
-                    // Respond with success message
-                    res.writeHead(200, {"Content-Type": "application/json"});
-                    res.write(JSON.stringify({message: "New book updated successfully."}));
-                    res.end();
-                });
-
-            } catch (err) {
-                res.writeHead(400, {"Content-Type": "application/json"});
-                res.write(JSON.stringify({message: "Invalid JSON data."}));
-                res.end();
-            }
-
-        });
+       bookController.editBook(req,res);
     }
 
     // Handle POST request to login a user
