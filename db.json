@@ -142,6 +142,50 @@
         "fine": 0
       },
       "role": "USER"
+    },
+    {
+      "id": "bd5a4f44-384e-4ca7-9635-f6550eedfc14",
+      "name": "Anonymous",
+      "username": "graceH",
+      "email": "g-h@gmail.com",
+      "penalty": {
+        "reason": "Late return",
+        "fine": 50
+      },
+      "role": "USER"
+    },
+    {
+      "id": "cee30a07-e2ee-461c-8ea6-48e46017bed5",
+      "name": "Anonymous",
+      "username": "graceH",
+      "email": "g-h@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": "9ed9250d-eca4-435a-b3f2-6ac30941166f",
+      "name": "Anonymous",
+      "username": "amir",
+      "email": "ami-h@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "70a72fd7-0208-40fc-9b53-9a2318b0dd45",
+      "name": "Parisa tabriz",
+      "username": "Pari",
+      "email": "parisa-t@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
     }
   ],
   "books": [

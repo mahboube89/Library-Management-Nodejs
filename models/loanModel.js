@@ -1,4 +1,5 @@
-const db = require("../db.json");
+"use strict";
+
 const fs = require("fs");
 const path = require("path");
 const dbPath = path.join(__dirname, "../db.json");
@@ -39,6 +40,7 @@ const addBookLoan = async (newLoanTransaction) => {
     await writeDb(db);   
 };
 
+
 // Function to find a loan by its associated bookId in the userBookLoans array
 const foundLoanByBookId = async (bookId) => {
     const db = await readDb();
@@ -58,6 +60,7 @@ const removeLoanById = async(loanId) => {
     // Write the updated loan transactions back to db.json
     await writeDb({...db, userBookLoans: newLoans});
 };
+
 
 module.exports = {
     addBookLoan,

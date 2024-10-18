@@ -1,3 +1,5 @@
+"use strict";
+
 const url = require("url");
 const bookModel = require("../models/bookModel");
 const crypto = require("crypto");
@@ -13,7 +15,8 @@ const getAllBooks = async(req, res) => {
     res.write(JSON.stringify(books)); // Send books data as a response
     res.end();
 
-}
+};
+
 
 // Controller function to handle the DELETE request to remove a book by its ID
 const removeBookById = async(req, res) => {

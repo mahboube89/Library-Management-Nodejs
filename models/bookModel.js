@@ -1,7 +1,9 @@
-const db = require("../db.json");
+"use strict";
+
 const fs = require("fs");
 const path = require("path");
 const dbPath = path.join(__dirname, "../db.json");
+
 
 // Function to read the database (db.json) file
 const readDb = () => {
@@ -22,12 +24,9 @@ const writeDb = (data) => {
         
         // Write the updated data to db.json
         fs.writeFile(dbPath, JSON.stringify(data, null, 2), (err) => {       
-            if (err) {
-                reject(err); // Reject the promise if there is an error
-            } else {
-                resolve(); // Resolve the promise if the write is successful
-            }
-            
+            if (err) reject(err); // Reject the promise if there is an error
+
+            resolve(); // Resolve the promise if the write is successful   
         });
     });
 };
@@ -129,7 +128,6 @@ const editBook = async (bookId, reqBody) => {
         // If the book is not found, throw an error
         throw new Error("Book not found.");
     }
-
 };
 
 
