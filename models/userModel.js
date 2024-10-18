@@ -1,134 +1,132 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const dbPath = path.join(__dirname, "../db.json");
-
-
-// Function to read the database (db.json) file
-const readDb = () => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(dbPath, "utf-8", (err, data) => {
-            if (err) reject(err);
-
-            resolve(JSON.parse(data));
-        });
-    });
-};
-
-
-// Function to write to the database (db.json) file
-const writeDb = (data) => {
-    return new Promise((resolve, reject) => {
-       fs.writeFile(dbPath, JSON.stringify(data, null, 2), (err) => {
-            if (err) reject(err);
-            resolve();
-       }); 
-    });
-};
+const { db } = require("./../configs/db");
+const { ObjectId } = require("mongodb");
 
 
 // Get all users from the database
 const getAllUsers = async () => {
-    const db = await readDb();
-    return db.users; // Return the list of users
+
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
+
+    // Fetch all users
+    return await usersCollection.find({}).toArray();   
 };
 
 
 // Check if a user already exists by username or email
 const userAlreadyExist = async (username, email) => {
-    const db = await readDb();
+    
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
 
-    // Find a user with a matching username or email
-    return db.users.find((user)=> {
-        return user.email === email || user.username === username
+    // Find a user with matching username or email
+    return await usersCollection.findOne({
+        $or: [{ usename: username }, { email: email }],
     });
 };
 
 
 // Add a new user to the database
-const addUser = async (newUser) => {
-    const db = await readDb();
-    db.users.push(newUser); // Add the new user to the db
-    await writeDb(db); // Write the updated database back to db.json
+const addUser = async (userData) => {
+
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
+
+    // Set the timestamps
+    const timestamp = new Date();
+
+    const newUser = {
+        ...userData,
+        created_at: timestamp, // Set the current time as the creation time
+        updated_at: timestamp, // Initially, updated_at is the same as created_at
+    };
+
+    // Insert the  user into the MongoDB collection
+    return await usersCollection.insertOne(newUser);   
 };
 
 
 // Find a user by both username and email
 const findUserByUsernameEmail = async (username, email) => {
-    const db = await readDb();
 
-    // Find and return the user with matching username and email
-    return db.users.find((user) => {
-        return user.username === username && user.email === email;
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
+
+    // Find the user by username and email
+    return await usersCollection.findOne({
+        username: username,
+        email: email,
     });
 };
 
 
 // Find a user by their user ID
 const findUserById = async(userId) => {
-    const db = await readDb();
 
-    // Find and return the user with the matching user ID
-    return db.users.find((user) => {
-        return user.id === userId;
-    });
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
+
+    const objectId = new ObjectId(userId);
+
+    return await usersCollection.findOne({ _id: objectId});
+    
 };
 
 
 // Check if a user is an admin by their user ID
 const isAdmin = async (userId) => {
-    const db = await readDb();
 
-     // Find the user by their user ID
-    const user = db.users.find((user) => user.id === userId);
+    const user = await findUserById(userId);
 
-    if(user) {
-        // Return true if the user's role is "ADMIN", otherwise false
+    // Check if the user has the role "ADMIN"
+    if (user) {
         return user.role === "ADMIN";
     } else {
-        // Throw an error if the user is not found
-        throw new Error("User not found");
+        throw new Error("User not found.")
     }
 };
 
 
 // Promote a user to admin by their user ID
 const makeAdmin = async(userId) => {
-    const db = await readDb();
 
-    // Find the user by their user ID
-    const user = db.users.find((user) => user.id === userId);
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
 
-    if(user) {
-        user.role = "ADMIN"; // Update the user's role to "ADMIN"
+    const objectId = new ObjectId(userId);
 
-        // Write the updated database back to the db.json file
-        await writeDb(db);
-        return user; // Return the updated user
-    } else {
-        throw new Error("User not found.")
-    }
+    const result = usersCollection.updateOne(
+        { _id: objectId},
+        { $set: { role: "ADMIN"}}
+    );
+
+    return result;
 };
 
 
 // Update a user's penalty by their user ID
 const updatePenalty = async(userId, penalty) => {
-    const db = await readDb();
 
-    // Find the user by their user ID
-    const user = db.users.find((user) => user.id === userId);
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
 
-    if(user) {
-        // Update the user's penalty
-        user.penalty = penalty;
+    const objectId = new ObjectId(userId);
 
-        // Write the updated database back to the db.json file
-        await writeDb(db);
-        return user; // Return the updated user
-    } else {
-        throw new Error("User not found.")
-    }
+    const result = usersCollection.updateOne(
+        { _id: objectId},
+        { $set: { penalty: penalty , updated_at: new Date() }}
+    );
+
+    return result;
 };
 
 

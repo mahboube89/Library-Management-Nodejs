@@ -11,6 +11,7 @@
 - **Requires**: No parameters or body required.
 - **Response**: 
     - 200 OK: A JSON array of users
+    - 500 : Failed to fetch users.
 
 
 ### Add User (POST)
@@ -19,7 +20,7 @@
 - **Requires**: 
     - Request Body:
     {
-        "name": "John Doe",
+        "name": "John Doe", (optional)
         "username": "johndoe",
         "email": "john.doe@example.com"
     }

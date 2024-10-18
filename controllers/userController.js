@@ -8,13 +8,20 @@ const userModel = require("../models/userModel");
 // Controller function to handle the GET request for fetching all users
 const getAllUsers = async (req, res) => {
 
-    // Fetch all users from the userModel
-    const users = await userModel.getAllUsers();
+    try {
+        // Fetch all users from the userModel
+        const users = await userModel.getAllUsers();
 
-    // Set response headers
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.write(JSON.stringify(users)); // Send users data as a response
-    res.end(); // End the response
+        // Set response headers
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify(users)); // Send users data as a response
+        res.end(); // End the response
+
+    } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "Failed to fetch users." }));
+        res.end();
+    }    
 };
 
 
@@ -54,14 +61,11 @@ const addUser = async (req, res) => {
 
             // Create a new user object with default values for penalty and role
             const newUser = {
-                id: crypto.randomUUID(),
+                ...userData,
                 name: userData.name || "Anonymous",
-                username: userData.username,
-                email: userData.email,
-                ...JSON.parse(user),
+                "role": "USER",
                 "penalty": {"reason": "None","fine": 0},
-                "role": "USER"
-                };
+            };
 
             // Add the new user to the database
             await userModel.addUser(newUser);
@@ -160,25 +164,20 @@ const makeAdmin = async (req, res) => {
             return;
         }
 
-        const roleUpdated = await userModel.makeAdmin(userId);
+        await userModel.makeAdmin(userId);
         
-
-        if(roleUpdated) {
-
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.write(
-                JSON.stringify({message: "Role updated successfully."})
-            );
-            res.end();
-
-        }
+        res.writeHead(200, {"Content-Type": "application/json"});
+        res.write(
+            JSON.stringify({message: "Role updated successfully."})
+        );
+        res.end();
+        
     } catch (error) {
         // Handle any errors thrown by isAdmin or other functions
         res.writeHead(500, { "Content-Type": "application/json" });
         res.write(JSON.stringify({ message: error.message }));
         res.end();       
-    }
-      
+    }     
 };
 
 
@@ -201,9 +200,6 @@ const updatePenalty = async(req, res) => {
             // Parse the incoming JSON data (should contain the 'penalty' object)
             const penalty = JSON.parse(reqBody).penalty;
 
-            console.log("penalty: ", penalty);
-            
-
             // Ensure penalty data is present and valid
             if (!penalty || !penalty.reason || penalty.fine === undefined) {
                 res.writeHead(400, {"Content-Type": "application/json"});
@@ -211,8 +207,7 @@ const updatePenalty = async(req, res) => {
                 res.end();
                 return;
             }
-            
-            
+                      
             const userFound = await userModel.findUserById(userId);
 
             // Check if the user was found, if not, return 404
@@ -241,7 +236,6 @@ const updatePenalty = async(req, res) => {
         }
     });
 };
-
 
 
 module.exports = {
