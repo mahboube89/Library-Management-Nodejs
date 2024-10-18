@@ -1,4 +1,6 @@
 "use strict";
+require("dotenv").config(); 
+
 
 // Importing the MongoClient from the MongoDB package
 const { MongoClient } = require("mongodb");
@@ -8,10 +10,10 @@ const { MongoClient } = require("mongodb");
 const url = "mongodb://localhost:27017/";
 
 // Creating a new MongoClient instance to manage the connection
-const dbConnection = new MongoClient(url);
+const dbConnection = new MongoClient(process.env.URL);
 
 // Name of the database to use in MongoDB
-const dbName = "library";
+const dbName = process.env.DB_NAME;
 
 
 // Main async function to establish the connection and interact with the database

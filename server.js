@@ -1,6 +1,7 @@
 "use strict";
 
 const http = require("http");
+require("dotenv").config(); 
 
 const bookController = require("./controllers/bookController");
 const loanController = require("./controllers/loanController");
@@ -68,7 +69,7 @@ const server = http.createServer((req, res) => {
 });
 
 // Start the server on port 4000
-server.listen(4000, () => {
-    console.log("Server is running on port 4000.");
+server.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}.`);
 
 });
