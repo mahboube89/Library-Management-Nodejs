@@ -47,31 +47,30 @@ const loanBook = async (req, res) => {
             }
 
             // Mark the book as unavailable
-            await bookModel.updateBookAvailability(bookId, 0);
+            const makeUnavailable = await bookModel.updateBookAvailability(bookId, 0);
 
+            if (makeUnavailable) {
+                // Set the loan date to today
+                const loanDate = new Date();
 
-            // Set the loan date to today
-            const loanDate = new Date();
+                // If returnDate is provided ("2024-11-01" format), use it; otherwise, set a default return date (14 days from the loan date)
+                returnDate = returnDate ? new Date(returnDate) : new Date(loanDate.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-            // If returnDate is provided ("2024-11-01" format), use it; otherwise, set a default return date (14 days from the loan date)
-            returnDate = returnDate ? new Date(returnDate) : new Date(loanDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+                // Create a new loan transaction for the user and book
+                const userBookTransaction = {
+                    userId,
+                    bookId,           
+                    loanDate: loanDate.toISOString(),
+                    returnDate: returnDate
+                };
+                
+                // Add the new loan transaction to the userBookLoans array
+                await loanModel.addBookLoan(userBookTransaction);
 
-            // Create a new loan transaction for the user and book
-            const userBookTransaction = {
-                id: crypto.randomUUID(),
-                userId,
-                bookId,           
-                loanDate: loanDate.toISOString(),
-                returnDate: returnDate
-            };
-            
-            // Add the new loan transaction to the userBookLoans array
-            await loanModel.addBookLoan(userBookTransaction);
-
-            res.writeHead(201, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "Book loaned successfully."}));
-            res.end();
-        
+                res.writeHead(201, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Book loaned successfully."}));
+                res.end();
+            }       
         } catch (err) {
             console.log("Error during loanBook process:", err.message);
             res.writeHead(400, {"Content-Type": "application/json"});

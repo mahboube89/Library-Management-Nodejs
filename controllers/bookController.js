@@ -86,14 +86,15 @@ const addBook = async (req, res) => {
                 return;
             }
 
-            // Create a new book object with a unique ID and 'is_available' flag set to 1
-            const newBook = {id: crypto.randomUUID(), ...bookData, is_available: 1};
-
-            await bookModel.addBook(newBook);
+            const result = await bookModel.addBook(bookData);
 
             // Respond with success message
             res.writeHead(201, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "New book added successfully."}));
+            res.write(JSON.stringify({
+                message: "New book added successfully.",
+                bookId: result.insertedId
+            
+            }));
             res.end();
 
         } catch (err) {
@@ -137,6 +138,14 @@ const editBook = async(req, res) => {
             // Parse and update the book details
             const reqBody = JSON.parse(newBookDetails);
 
+            // Ensure at least one field is provided to update
+            if (Object.keys(reqBody).length === 0) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.write(JSON.stringify({ message: "No fields to update provided." }));
+                res.end();
+                return;
+            };
+
             // Validate that price is a number and non-negative
             if (reqBody.price !== undefined && (typeof reqBody.price !== 'number' || reqBody.price < 0)) {
                 res.writeHead(400, { "Content-Type": "application/json" });
@@ -148,10 +157,17 @@ const editBook = async(req, res) => {
             // Call the editBook function from the model and wait for it to complete
             const editedBook = await bookModel.editBook(bookId, reqBody);
 
+            // Check if the update operation did not find a matching document
+            if (editedBook.matchedCount === 0) {
+                res.writeHead(404, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "Book not found."}));
+                res.end();
+                return;
+            }
             
             // Respond with success message
             res.writeHead(200, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "New book updated successfully.", book: editedBook}));
+            res.write(JSON.stringify({message: "Book updated successfully.", book: editedBook}));
             res.end();
             
 

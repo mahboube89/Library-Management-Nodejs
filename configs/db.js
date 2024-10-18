@@ -6,9 +6,6 @@ require("dotenv").config();
 const { MongoClient } = require("mongodb");
 
 
-// Setting up the connection URL for the MongoDB instance
-const url = "mongodb://localhost:27017/";
-
 // Creating a new MongoClient instance to manage the connection
 const dbConnection = new MongoClient(process.env.URL);
 
@@ -16,20 +13,16 @@ const dbConnection = new MongoClient(process.env.URL);
 const dbName = process.env.DB_NAME;
 
 
-// Main async function to establish the connection and interact with the database
-const main = async () => {
+// Export async function to establish the connection and interact with the database
+module.exports = {
+    db: async () => {
 
-    // Connect to MongoDB
-    await dbConnection.connect();
-    console.log("connect to mongodb successfully");
-
-    // Get a reference to the database
-    const db = dbConnection.db(dbName);
-
-    return "Done";
+        // Connect to MongoDB
+        await dbConnection.connect();
+        console.log("connect to mongodb successfully");
     
+        // Get a reference to the database
+        const db = dbConnection.db(dbName);    
+        return db;
+    }
 };
-
-
-// Calling the main function to establish the connection
-main();

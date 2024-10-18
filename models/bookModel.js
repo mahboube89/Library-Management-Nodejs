@@ -1,141 +1,133 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const dbPath = path.join(__dirname, "../db.json");
-
-
-// Function to read the database (db.json) file
-const readDb = () => {
-    return new Promise((resolve, reject) => {
-
-        // Read the db.json file
-        fs.readFile(dbPath, "utf-8", (err, data)=> {
-            if (err) reject(err); // Reject the promise if there is an error
-            resolve(JSON.parse(data)); // Parse and resolve the data if successful
-        });
-    });
-};
-
-
-// Function to write to the database (db.json) file
-const writeDb = (data) => {
-    return new Promise((resolve, reject) => {
-        
-        // Write the updated data to db.json
-        fs.writeFile(dbPath, JSON.stringify(data, null, 2), (err) => {       
-            if (err) reject(err); // Reject the promise if there is an error
-
-            resolve(); // Resolve the promise if the write is successful   
-        });
-    });
-};
+const { db } = require("./../configs/db");
+const { ObjectId } = require("mongodb");
 
 
 // Fetch all books from the database
 const fetchAllBooks = async () => {
-    const db = await readDb(); // Read the database
-    return db.books; // Return the list of books
+
+    // Establish connection to the database
+    const database = await db();
+    const booksCollection = database.collection("books"); // Access the "books" collection
+
+    const books = await booksCollection.find({}).toArray();
+
+    return books; // Return the list of books
 };
 
 
 // Find a specific book by its ID
 const findBookById = async(bookId)=> {
-    const db = await readDb(); // Read the database
 
-    // Find and return the book with the matching ID
-    return db.books.find((book) => book.id === bookId);
+    // Establish connection to the database
+    const database = await db();
+    const booksCollection = database.collection("books"); // Access the "books" collection
+
+    // Convert the bookId to ObjectId
+    const objectId = new ObjectId(bookId);
+
+    const book = await booksCollection.findOne({ _id: objectId});
+    return book;
 };
 
 
 // Add a new book to the database
-const addBook = async (newBook) => {
-    const db = await readDb(); // Read the database
+const addBook = async (bookData) => {
 
-    // Add the new book to the books array
-    db.books.push(newBook);
-    await writeDb(db); // Write the updated database back to db.json
+    // Establish connection to the database
+    const database = await db(); 
+    const booksCollection = database.collection("books"); // Access the "books" collection
+
+    // Set the timestamps
+    const timestamp = new Date();
+
+    const newBook = {
+        ...bookData,
+        is_available:1, // Set the book as available by default
+        created_at: timestamp, // Set the current time as the creation time
+        updated_at: timestamp, // Initially, updated_at is the same as created_at
+    };
+
+    // Insert the book into the MongoDB collection
+    const result = await booksCollection.insertOne(newBook);
+    return result;
 
 };
 
 
 // Remove a book from the database by its ID
 const removeBookById = async (bookId) => {
-    const db = await readDb(); // Read the database
-
-    // Filter out the book with the matching ID
-    const bookToRemove = db.books.find((book) => book.id === bookId);
     
-    // If no books were removed, it means the book wasn't found
-    if (!bookToRemove) {
-        throw new Error("Book not found");
-    }
+    // Establish connection to the database
+    const database = await db(); 
+    const booksCollection = database.collection("books"); // Access the "books" collection
 
-    const newBooks = db.books.filter((book) => book.id !== bookId)
+    // Convert the bookId to ObjectId
+    const objectId = new ObjectId(bookId);
 
-    // Write the updated books array back to the database
-    await writeDb({ ...db, books: newBooks});
-    return bookToRemove;   
+    const result = await booksCollection.deleteOne({ _id: objectId});
+
+    if (result.deletedCount) {
+        return { message: "Book removed successfully."}
+    } else {
+        return {message: "Book not found"}
+    };
 };
 
 
 // Update the availability status of a book
 const updateBookAvailability = async(bookId, availability) => {
 
-    const db = await readDb(); // Read the database
+    // Establish connection to the database
+    const database = await db();
+    const booksCollection = database.collection("books"); // Access the "books" collection
 
-    // Find the book with the matching ID
-    const book = db.books.find((book) => book.id === bookId);
+    // Convert the bookId to ObjectId
+    const objectId = new ObjectId(bookId);
 
-    // If the book exists, update its availability
-    if (book) {
-        book.is_available = availability; // Update the is_available property
-        await writeDb(db); // Write the updated database back
-        return book; // Return the updated book
-
-    } else {
-
-        // If the book is not found, throw an error
-        throw new Error("Book not found");
-    } 
+    // Update the 'is_available' status of the book
+    const result = await booksCollection.updateOne(
+        { _id: objectId},
+        { $set: { is_available: availability}, }
+    );
+    return result;
 };
 
 
 // Edit the details of an existing book
-const editBook = async (bookId, reqBody) => {
+const editBook = async (bookId, bookData) => {
 
-    const db = await readDb(); // Read the database
-
-    // Find the book with the matching ID
-    const book = db.books.find((book) => book.id === bookId.trim());
-
-    console.log("found book:", book); // undefined
+    // Establish connection to the database
+    const database = await db(); 
+    const booksCollection = database.collection("books"); // Access the "books" collection
     
+    // Capture the current timestamp for the 'updated_at' field
+    const timestamp = new Date();
 
-    // If the book exists, update its details
-    if (book) {
+    // Convert the bookId to ObjectId
+    const objectId = new ObjectId(bookId);
 
-        // Update the book details
-        if(reqBody.title) book.title = reqBody.title; // Update title if provided
-        if(reqBody.author) book.author = reqBody.author; // Update author if provided
-        if(reqBody.price) book.price = reqBody.price; // Update price if provided
+    // Update the book with the provided data, and set the 'updated_at' field to the current timestamp
+    const result = await booksCollection.updateOne(
+        { _id: objectId}, // Find the book by its ID
+        {
+            $set: {
+                ...bookData,
+                updated_at: timestamp
+            },
+        }
+    );
 
-        await writeDb(db); // Write the updated database back
-        return book; // Return the updated book
-
-    } else {
-        
-        // If the book is not found, throw an error
-        throw new Error("Book not found.");
-    }
+    return result;
 };
 
 
 module.exports = {
     fetchAllBooks,
-    findBookById,
     updateBookAvailability,
     addBook,
+    findBookById,
     removeBookById,
     editBook
-}
+};

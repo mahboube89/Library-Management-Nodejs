@@ -1,64 +1,46 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const dbPath = path.join(__dirname, "../db.json");
-
-
-// Function to read the database (db.json) 
-const readDb = () => {
-    return new Promise((resolve, reject) => {
-        // Read the db.json file and handle any potential errors
-        fs.readFile(dbPath, "utf-8", (err, data)=> {
-            if (err) reject(err);
-            resolve(JSON.parse(data));
-        });
-    });
-};
-
-
-// Function to write data to the database (db.json)
-const writeDb = (data) => {
-    return new Promise((resolve, reject) => {
-        // Write the data to db.json and format it with indentation (null, 2)
-        fs.writeFile(dbPath, JSON.stringify(data, null, 2), (err) => {       
-            if (err) reject(err);
-            resolve(); // Resolve the promise once the data has been successfully written
-        });
-    });
-};
+const { db } = require("./../configs/db");
+const { ObjectId } = require("mongodb");
 
 
 // Function to add a new loan transaction to the userBookLoans array
 const addBookLoan = async (newLoanTransaction) => {
-    const db = await readDb();
 
-    // Add the new loan transaction to the userBookLoans array
-    db.userBookLoans.push(newLoanTransaction);
-
-    // Write the updated database state back to db.json
-    await writeDb(db);   
+    // Establish connection to the database
+    const database = await db(); 
+    const loansCollection = database.collection("loans"); 
+    
+    // Insert a new loan transaction into the loans collection
+    const result = await loansCollection.insertOne(newLoanTransaction);
+    return result;
 };
 
 
 // Function to find a loan by its associated bookId in the userBookLoans array
 const foundLoanByBookId = async (bookId) => {
-    const db = await readDb();
+    
+    // Establish connection to the database
+    const database = await db(); 
+    const loansCollection = database.collection("loans"); 
 
-    // Find and return the loan transaction with the matching bookId
-    return db.userBookLoans.find((book) => book.id === bookId);
+    // Find a loan transaction by the associated bookId
+    const result = await loansCollection.findOne({ bookId: new ObjectId(bookId)});
+    return result;
 };
 
 
 // Function to remove a loan transaction by its loanId
 const removeLoanById = async(loanId) => {
-    const db = await readDb();
 
-    // Filter out the loan transaction with the matching loanId
-    const newLoans = db.userBookLoans.filter((loan) => loan.id !== loanId);
+    // Establish connection to the database
+    const database = await db(); 
+    const loansCollection = database.collection("loans"); 
 
-    // Write the updated loan transactions back to db.json
-    await writeDb({...db, userBookLoans: newLoans});
+    // Delete a loan transaction by its unique _id
+    const result = await loansCollection.deleteOne({ _id: new ObjectId(loanId)});
+    return result;
+    
 };
 
 
