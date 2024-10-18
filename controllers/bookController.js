@@ -2,7 +2,6 @@
 
 const url = require("url");
 const bookModel = require("../models/bookModel");
-const crypto = require("crypto");
 
 
 // Controller function to handle the GET request for fetching all books
