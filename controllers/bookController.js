@@ -4,40 +4,63 @@ const url = require("url");
 const bookModel = require("../models/bookModel");
 
 
+// Utility function to parse and validate bookId
+const parseBookId = (req, res) => {
+
+    // Extract the userId from the query string
+    const parsedUrl = url.parse(req.url, true);
+    const bookId = parsedUrl.query.id;
+    
+    if(!bookId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "User ID is required." }));
+        res.end();
+        return null;
+    }
+
+    return bookId;
+};
+
+
 // Controller function to handle the GET request for fetching all books
 const getAllBooks = async(req, res) => {
 
-    // Fetch all books from the bookModel
-    const books = await bookModel.fetchAllBooks();
+    try {
+        
+        // Fetch all books from the bookModel
+        const books = await bookModel.fetchAllBooks();
+    
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify(books)); // Send books data as a response
+        res.end();
 
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.write(JSON.stringify(books)); // Send books data as a response
-    res.end();
+    } catch (error) {
+
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ status: "error", message: "Failed to fetch books." }));
+        res.end();
+    }
 
 };
 
 
 // Controller function to handle the DELETE request to remove a book by its ID
 const removeBookById = async(req, res) => {
-    // Parse the request URL
-    const parsedUrl = url.parse(req.url, true); 
     
-           
-    // Get the book ID from the query string and convert to integer
-    const bookId = parsedUrl.query.id;
-
-    // Validate that bookId is provided
-    if (!bookId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: "Book ID is required." }));
-        res.end();
-        return;
-    }
+    const bookId = parseBookId(req, res);
+    if(!bookId) return;
 
     try {
 
         // Call the model to remove the book by its ID
         const removedBook = await bookModel.removeBookById(bookId);
+
+        if (!removedBook.deletedCount) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ status: "error", message: "Book not found." }));
+            res.end();
+            return;
+        }
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.write(JSON.stringify(removedBook)); 
@@ -45,8 +68,8 @@ const removeBookById = async(req, res) => {
 
     } catch (err) {
         
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: err.message }));
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "Failed to remove book."  }));
         res.end();
     }  
 };
@@ -111,17 +134,8 @@ const addBook = async (req, res) => {
 // Controller function to handle the PUT request to edit the details of a book
 const editBook = async(req, res) => {
 
-    // Extract the bookId from the query string
-    const parsedUrl = url.parse(req.url, true);
-    const bookId = parsedUrl.query.id;
-
-    // Ensure the bookId is valid
-    if (!bookId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: "Book ID is required." }));
-        res.end();
-        return;
-    }
+    const bookId = parseBookId(req, res);
+    if(!bookId) return;
 
     // Collect incoming data
     let newBookDetails = "";
