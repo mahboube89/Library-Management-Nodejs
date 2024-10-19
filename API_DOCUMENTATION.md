@@ -11,7 +11,8 @@
 - **Requires**: No parameters or body required.
 - **Response**: 
     - 200 OK: A JSON array of users
-    - 500 : Failed to fetch users.
+    - 500 Internal Server Error: If there is a server-side issue fetching users.
+
 
 ### Get a User by ID (GET)
 - **Endpoint**: `/api/users?id={userId}`
@@ -19,10 +20,10 @@
 - **Requires**: 
     - id (required) – The User ID.
 - **Response**: 
-    - 400 : User ID is required.
-    - 404 : User not found.
-    - 200 OK: Return user data
-    - 500 : Failed to fetch users.
+    - 400 Bad Request: If userId is not provided.
+    - 404 Not Found: If the user with the provided userId is not found.
+    - 200 OK: Returns the user data.
+    - 500 Internal Server Error: If there is a server-side issue fetching the user.
 
 
 ### Add User (POST)
@@ -36,10 +37,10 @@
         "email": "john.doe@example.com"
     }
 - **Response**: 
-    - 201 Created: A success message
+    - 201 Created: If the user is successfully added.
     - 400 Bad Request: If username or email is missing.
     - 409 Conflict: If username or email already exists.
-    - 400 Invalid JSON: If the request body is not valid JSON
+    - 400 Bad Request: If the request body contains invalid JSON
 
 
 ### Login User (POST)
@@ -52,10 +53,10 @@
         "email": "john.doe@example.com"
     }
 - **Response**: 
-    - 200 OK: Returns the username and email
+    - 200 OK: Returns username and email.
     - 400 Bad Request: If username or email is missing.
     - 401 Unauthorized: If the user is not found.
-    - 400 Invalid JSON: If the request body is not valid JSON
+    - 400 Bad Request: If the request body contains invalid JSON.
 
 
 ### Make Admin (PUT)
@@ -64,9 +65,9 @@
 - **Requires**: 
     - id (required) – The User ID.
 - **Response**: 
-    - 200 OK: Success message if the role was updated.
-    - 400 Bad Request: If id is missing or if the user is already an admin.
-    - 404 Not Found: If the user is not found.
+    - 200 OK: If the role is successfully updated to admin.
+    - 400 Bad Request: If userId is missing or if the user is already an admin.
+    - 404 Not Found: If the user with the given userId is not found.
 
 
 ### Update User Penalty (PUT)
@@ -82,11 +83,10 @@
         }
     }
 - **Response**: 
-    - 200 OK: If the penalty was updated.
-    - 400 Bad Request: If the penalty object is missing or invalid.
+    - 200 OK: If the penalty is successfully updated.
+    - 400 Bad Request: If the penalty object is missing or invalid (missing reason or fine).
     - 404 Not Found: If the user is not found.
-    - 400 Invalid JSON: If the request body is not valid JSON
-
+    - 400 Bad Request: If the request body contains invalid JSON.
 
 
 ### Update User Infos (PUT)
@@ -101,10 +101,11 @@
         "email": "john.doe@example.com"
     }
 - **Response**: 
-    - 200 OK: If the penalty was updated.
-    - 400 Bad Request: User ID is required.
-    - 404 Not Found: User not found.
-    - 400 No user data provided for update.
+    - 200 OK: If the user information is successfully updated.
+    - 400 Bad Request: If the userId is missing or no update data is provided.
+    - 404 Not Found: If the user is not found.
+    - 400 Bad Request: If the request body contains invalid JSON.
+
 
 
 ## Books API
@@ -114,7 +115,8 @@
 - **Description**: Retrieves a list of all books in the system.
 - **Requires**: No parameters or body required.
 - **Response**: 
-    - 200 OK: A JSON array of users
+    - 200 OK: Returns a JSON array of books.
+    - 500 Internal Server Error: If there is a server-side issue fetching the books. 
 
 
 ### Add Book (POST)
@@ -128,9 +130,9 @@
         "price": 25
     }
 - **Response**: 
-    - 201 Created: A success message
-    - 400 Bad Request: If title, author, or price is missing or invalid.
-    - 400 Invalid JSON: If the request body is not valid JSON
+    - 201 Created: If the book is successfully added.
+    - 400 Bad Request: If required fields (title, author, price) are missing or invalid.
+    - 400 Bad Request: If the request body contains invalid JSON.
 
 
 ### Edit Book (PUT)
@@ -145,11 +147,10 @@
         "price": 25 (optional)
     }
 - **Response**: 
-    - 200 OK: If the book was successfully updated
-    - 400 Bad Request: If the price is negative or non-numeric, or if the id is not provided.
-    - 404 Not Found: If the book with the specified id is not found
-    - 400 Invalid JSON: If the request body is not valid JSON
-
+    - 200 OK: If the book details are successfully updated.
+    - 400 Bad Request: If bookId is missing or invalid, or if price is negative.
+    - 404 Not Found: If the book with the provided bookId is not found.
+    - 400 Bad Request: If the request body contains invalid JSON.
 
 ### Delete Book (DELETE)
 - **Endpoint**: `/api/books?id={bookId}`
@@ -157,8 +158,9 @@
 - **Requires**: 
     - id (required) – The Book ID.
 - **Response**: 
-    - 200 OK: Success message.
+    - 200 OK: If the book is successfully deleted.
     - 404 Not Found: If the book is not found.
+
 
 
 ## Loans API
@@ -174,10 +176,10 @@
         "returnDate": "2024-11-01" (optional)
     }
 - **Response**: 
-    - 201 Created: Success message.
-    - 400 Bad Request: If the book is already loaned out or if the request data is invalid.
-    - 404 Not Found: If the book or user is not found.
-    - 400 Invalid JSON: If the request body is not valid JSON
+    - 201 Created: If the book is successfully loaned.
+    - 400 Bad Request: If userId or bookId is missing or invalid, or if the book is already loaned out.
+    - 404 Not Found: If the user or book is not found.
+    - 400 Bad Request: If the request body contains invalid JSON.
 
 
 ### Return a Book (PUT)
@@ -186,6 +188,6 @@
 - **Requires**:
     - id (required) – The Book ID.
 - **Response**: 
-    - 200 OK: Success message.
-    - 400 Bad Request: If the book is already available.
+    - 200 OK: If the book is successfully returned.
+    - 400 Bad Request: If bookId is missing or if the book is already available.
     - 404 Not Found: If the book is not found.
