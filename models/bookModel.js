@@ -171,7 +171,7 @@ const editBook = async (bookId, bookData) => {
         return { message: "Book updated successfully." };
 
     } catch (error) {
-        throw new Error('Failed to update the book.');
+        throw new Error("Failed to update the book.");
     }
 };
 
