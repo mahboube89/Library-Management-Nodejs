@@ -13,6 +13,17 @@
     - 200 OK: A JSON array of users
     - 500 : Failed to fetch users.
 
+### Get a User by ID (GET)
+- **Endpoint**: `/api/users?id={userId}`
+- **Description**: Retrieves information about a specific user based on the provided userId.
+- **Requires**: 
+    - id (required) – The User ID.
+- **Response**: 
+    - 400 : User ID is required.
+    - 404 : User not found.
+    - 200 OK: Return user data
+    - 500 : Failed to fetch users.
+
 
 ### Add User (POST)
 - **Endpoint**: `/api/users`
@@ -48,7 +59,7 @@
 
 
 ### Make Admin (PUT)
-- **Endpoint**: `/api/users/upgrade`
+- **Endpoint**: `/api/users/upgrade?id={userId}`
 - **Description**: Promotes a user to an ADMIN role.
 - **Requires**: 
     - id (required) – The User ID.
@@ -59,7 +70,7 @@
 
 
 ### Update User Penalty (PUT)
-- **Endpoint**: `/api/users`
+- **Endpoint**: `/api/users/penalty?id={userId}`
 - **Description**: Updates the penalty information for a user.
 - **Requires**:
   - `id` (query parameter) – User ID
@@ -75,6 +86,25 @@
     - 400 Bad Request: If the penalty object is missing or invalid.
     - 404 Not Found: If the user is not found.
     - 400 Invalid JSON: If the request body is not valid JSON
+
+
+
+### Update User Infos (PUT)
+- **Endpoint**: `/api/users?id={userId}`
+- **Description**: Updates the penalty information for a user.
+- **Requires**:
+  - `id` (query parameter) – User ID
+  - `reqBody` (JSON) – Contains a `penalty` object with `reason` and `fine`.
+    {
+        "name": "John Doe", (optional)
+        "username": "johndoe",
+        "email": "john.doe@example.com"
+    }
+- **Response**: 
+    - 200 OK: If the penalty was updated.
+    - 400 Bad Request: User ID is required.
+    - 404 Not Found: User not found.
+    - 400 No user data provided for update.
 
 
 ## Books API
@@ -104,7 +134,7 @@
 
 
 ### Edit Book (PUT)
-- **Endpoint**: `/api/books`
+- **Endpoint**: `/api/books?id={bookId}`
 - **Description**: Updates the details of an existing book (can update title, author, or price). Fields not provided in the request body will remain unchanged.
 - **Requires**: 
     - id (required) – The Book ID.
@@ -122,7 +152,7 @@
 
 
 ### Delete Book (DELETE)
-- **Endpoint**: `/api/books`
+- **Endpoint**: `/api/books?id={bookId}`
 - **Description**:  Deletes a book from the library.
 - **Requires**: 
     - id (required) – The Book ID.
@@ -139,8 +169,8 @@
 - **Requires**: 
     - Request Body:
     {
-        "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
-        "bookId": "1",
+        "userId": "6713957c4cf7dbf300189f71",
+        "bookId": "6712dba8cf3c6211e6f058a8",
         "returnDate": "2024-11-01" (optional)
     }
 - **Response**: 
@@ -151,7 +181,7 @@
 
 
 ### Return a Book (PUT)
-- **Endpoint**: `/api/books/return`
+- **Endpoint**: `/api/books/return?id={bookId}`
 - **Description**: Marks a book as returned and updates its availability.
 - **Requires**:
     - id (required) – The Book ID.
