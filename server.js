@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
     }
     
     // Handle PUT request for updating role to ADMIN
-    else if(req.method === "PUT" && req.url.startsWith("/api/users/upgrade")) {
+    else if(req.method === "PUT" && req.url.includes("/upgrade")) {
         userController.makeAdmin(req, res);
     }
 
@@ -77,6 +77,13 @@ const server = http.createServer((req, res) => {
         userController.getUserById(req, res);
     }
  
+    // Default response for undefined routes
+    // If no other routes match, this will return a 404 error
+    else {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "Route not found." }));
+        res.end();
+    }
 });
 
 // Start the server on port 4000
