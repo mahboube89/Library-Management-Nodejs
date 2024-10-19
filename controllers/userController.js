@@ -292,11 +292,53 @@ const updateUserInfo = async(req, res) => {
 };
 
 
+const getUserById = async(req, res) => {
+
+    // Extract the userId from the query string
+    const parsedUrl = url.parse(req.url, true);
+    const userId = parsedUrl.query.id;
+
+    // Ensure the userId is valid
+    if (!userId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "User ID is required." }));
+        res.end();
+        return;
+    }
+
+
+    try {
+        // Fetch user by userId from the userModel
+        const user = await userModel.findUserById(userId);
+
+        if (!user) {
+            // If the user is not found, return 404
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ message: "User not found." }));
+            res.end();
+            return;
+        }
+
+        // Set response headers
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify(user)); // Send users data as a response
+        res.end(); // End the response
+
+    } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "Failed to fetch users." }));
+        res.write(JSON.stringify({ message: err.message}));
+        res.end();
+    }    
+};
+
+
 module.exports = {
     getAllUsers,
     addUser,
     loginUser,
     makeAdmin,
     updatePenalty,
-    updateUserInfo
+    updateUserInfo,
+    getUserById
 };

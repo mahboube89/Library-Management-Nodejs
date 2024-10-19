@@ -71,6 +71,11 @@ const server = http.createServer((req, res) => {
     else if(req.method === "PUT" && req.url.startsWith("/api/users")) {
         userController.updateUserInfo(req, res);
     }
+
+    // Handle GET request for fetching a user by its ID
+    else if(req.method === "GET" && req.url.startsWith("/api/users")) {
+        userController.getUserById(req, res);
+    }
  
 });
 
