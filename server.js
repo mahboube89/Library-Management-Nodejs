@@ -57,13 +57,13 @@ const server = http.createServer((req, res) => {
     }
     
     // Handle PUT request for updating role to ADMIN
-    else if(req.method === "PUT" && req.url.match(/\/api\/users\/[a-f\d]{24}\/upgrade/)) {
+    else if(req.method === "PUT" && req.url.startsWith("/api/users/upgrade")) {
         userController.makeAdmin(req, res);
     }
 
     // Handle PUT request for update penalty for a user
     // [a-f\d]{24}: This matches a 24-character string consisting of hexadecimal digits (the format used for MongoDB ObjectIds)
-    else if(req.method === "PUT" && req.url.match(/\/api\/users\/[a-f\d]{24}\/penalty/)) {
+    else if(req.method === "PUT" && req.url.startsWith("/api/users/penalty")) {
         userController.updatePenalty(req, res);
     }
 

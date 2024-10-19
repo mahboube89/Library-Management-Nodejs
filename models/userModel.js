@@ -119,6 +119,17 @@ const makeAdmin = async(userId) => {
     const database = await db();
     const usersCollection = database.collection("users"); // Access the "users" collection
 
+    const userExist = await findUserById(userId);
+    if (!userExist) {
+        throw new Error('User not found.');
+    }
+
+    const isAdminAlready = await isAdmin(userId);
+
+    if(isAdminAlready) {
+        throw new Error('User is already an ADMIN.');
+    }
+
     const objectId = new ObjectId(userId);
 
     const result = usersCollection.updateOne(
@@ -200,6 +211,18 @@ const updateUserInfo = async(userId, userData) => {
     
 };
 
+const loginUser = async (username, email) => {
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection
+
+    // Find the user by username and email
+    return await usersCollection.findOne(
+        
+         {username: username}, {email: email}
+       
+    );
+}
 
 module.exports = {
     getAllUsers,
@@ -210,5 +233,6 @@ module.exports = {
     isAdmin,
     makeAdmin,
     updatePenalty,
-    updateUserInfo
+    updateUserInfo,
+    loginUser
 };

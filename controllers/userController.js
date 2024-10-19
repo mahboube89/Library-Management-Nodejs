@@ -101,7 +101,7 @@ const loginUser = async (req, res) => {
             }
 
             // Find the user in the database by matching the username and email
-            const mainUser = await userModel.findUserByUsernameEmail(username, email);
+            const mainUser = await userModel.loginUser(username, email);
 
             // If no user is found, return a 401 Unauthorized response
             if(!mainUser) {
@@ -135,27 +135,9 @@ const makeAdmin = async (req, res) => {
     }
 
     try {
-        const userFound = await userModel.findUserById(userId);   
 
-        // If user is not found, return 404
-        if (!userFound) {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "User not found." }));
-            res.end();
-            return;
-        }
-
-        const isRoleAdmin = await userModel.isAdmin(userId);    
-
-        if (isRoleAdmin) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.write(JSON.stringify({ message: "User is already an ADMIN." }));
-            res.end();
-            return;
-        }
-
-        await userModel.makeAdmin(userId);
-        
+        const result = await userModel.makeAdmin(userId);
+       
         res.writeHead(200, {"Content-Type": "application/json"});
         res.write(
             JSON.stringify({message: "Role updated successfully."})
