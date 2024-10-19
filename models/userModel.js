@@ -219,7 +219,9 @@ const loginUser = async (username, email) => {
     // Find the user by username and email
     return await usersCollection.findOne(
         
-         {username: username}, {email: email}
+        {
+            $and: [{ username: username }, { email: email }]
+        }
        
     );
 }
