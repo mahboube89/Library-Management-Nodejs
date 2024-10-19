@@ -42,23 +42,19 @@ cd Nodejs-Library-Management
 ```
 
 2- Install dependencies:
-
         ```
         npm install
        ```
 
 3- Set up environment variables:
 
-    - Copy the `.env.example` file to `.env`  
-
+- Copy the `.env.example` file to `.env`  
         ```
         cp .env.example .env
-        ```
-        
+        ```        
  Adjust the URI if you're using a cloud database like MongoDB Atlas.
 
 4- Update your .env file with the necessary environment variables:
-
     ```
     PORT=4000
     URL = "mongodb://localhost:27017/"
@@ -67,7 +63,6 @@ cd Nodejs-Library-Management
 Adjust the `URI` if you're using a cloud database like MongoDB Atlas.
 
 5- Run the server:
-
     ```
     npm run start
     ```
