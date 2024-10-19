@@ -18,7 +18,7 @@ const fetchAllBooks = async () => {
         return books; // Return the list of books
 
     } catch (error) {
-        throw new Error('Failed to fetch books from the database.');
+        throw new Error('Failed to fetch books from the database:' + error.message );
     }
 };
 
@@ -43,7 +43,7 @@ const findBookById = async(bookId)=> {
         return book;
 
     } catch (error) {
-        throw new Error('Failed to fetch the book by ID.');
+        throw new Error('Failed to fetch the book by ID:' + error.message );
     }
 };
 
@@ -72,7 +72,7 @@ const addBook = async (bookData) => {
         return result;
 
     } catch (error) {
-        throw new Error('Failed to add the book.');
+        throw new Error('Failed to add the book:' + error.message );
     }
 
 };
@@ -99,7 +99,7 @@ const removeBookById = async (bookId) => {
         return { message: "Book removed successfully." };
     
     } catch (error) {
-        throw new Error('Failed to remove the book.');
+        throw new Error('Failed to remove the book:' + error.message );
     }
 };
 
@@ -129,7 +129,7 @@ const updateBookAvailability = async(bookId, availability) => {
         return { message: "Book availability updated successfully." };
 
     } catch (error) {
-        throw new Error('Failed to update book availability.');
+        throw new Error('Failed to update book availability:' + error.message );
     }
 };
 
@@ -171,7 +171,7 @@ const editBook = async (bookId, bookData) => {
         return { message: "Book updated successfully." };
 
     } catch (error) {
-        throw new Error("Failed to update the book.");
+        throw new Error("Failed to update the book:"+ error.message );
     }
 };
 

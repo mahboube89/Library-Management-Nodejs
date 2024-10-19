@@ -17,7 +17,7 @@ const getAllUsers = async () => {
         return await usersCollection.find({}).toArray();
 
     } catch (error) {
-        throw new Error ("Error fetching all users.");
+        throw new Error ("Error fetching all users:" + error.message );
     }
 };
 
@@ -43,7 +43,7 @@ const userAlreadyExist = async (userId, username, email) => {
         );
 
     } catch (error) {
-        throw new Error ("Error checking user existence.");
+        throw new Error ("Error checking user existence:" + error.message );
     }
 };
 
@@ -63,7 +63,7 @@ const addUser = async (userData) => {
             const existingUser = await findUserByUsernameEmail(userData.username, userData.email);
     
             if (existingUser) {
-                throw new Error('Username or email already exists for another user.');
+                throw new Error('Username or email already exists for another user:' + error.message );
             }
         }
     
@@ -103,7 +103,7 @@ const findUserByUsernameEmail = async (username, email) => {
         );
         
     } catch (error) {
-        throw new Error ("Error finding user by username and email.");
+        throw new Error ("Error finding user by username and email:" + error.message );
     }
 };
 
@@ -121,7 +121,7 @@ const findUserById = async(userId) => {
         return await usersCollection.findOne({ _id: objectId});
         
     } catch (error) {
-        throw new Error ("Error finding user by ID.");
+        throw new Error ("Error finding user by ID:" + error.message );
     }  
 };
 
@@ -175,7 +175,7 @@ const makeAdmin = async(userId) => {
         return result;
 
     } catch (error) {
-        throw new Error('Error promoting user to ADMIN.');
+        throw new Error('Error promoting user to ADMIN:' + error.message );
     }
 };
 
@@ -204,7 +204,7 @@ const updatePenalty = async(userId, penalty) => {
         return result;
         
     } catch (error) {
-        throw new Error('Error updating user penalty.');
+        throw new Error('Error updating user penalty:' + error.message );
     }
 };
 
@@ -267,7 +267,7 @@ const updateUserInfo = async(userId, userData) => {
         return result;
         
     } catch (error) {
-        throw new Error('Error updating user info.');
+        throw new Error('Error updating user info:' + error.message );
     }
     
 };
@@ -290,7 +290,7 @@ const loginUser = async (username, email) => {
         );
         
     } catch (error) {
-        throw new Error('Error during login.');
+        throw new Error('Error during login:' + error.message );
     }
 };
 

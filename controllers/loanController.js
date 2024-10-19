@@ -23,10 +23,6 @@ const loanBook = async (req, res) => {
             const parsedBody = JSON.parse(reqBody);
             let { userId, bookId, returnDate } = parsedBody;
 
-            // Ensure userId and bookId are trimmed (removing any potential spaces)
-            userId = userId.trim();
-            bookId = bookId.trim();
-
             // Validate that userId and bookId are present
             if (!userId || !bookId) {
                 throw new Error("Missing userId or bookId in request body");
@@ -38,12 +34,13 @@ const loanBook = async (req, res) => {
             }
 
             // Convert userId and bookId to ObjectId
-            userId = new ObjectId(userId);
-            bookId = new ObjectId(bookId);
+            userId = new ObjectId(userId.trim());
+            bookId = new ObjectId(bookId.trim());
 
 
             // Check if the user exists in the database
             const user = await userModel.findUserById(userId);
+
             if (!user) {
                 // If the user is not found, return a 404 Not Found error
                 res.writeHead(404, { "Content-Type": "application/json" });
@@ -75,10 +72,7 @@ const loanBook = async (req, res) => {
             const makeUnavailable = await bookModel.updateBookAvailability(bookId, 0);
 
             if (makeUnavailable.modifiedCount === 0) {
-                res.writeHead(500, { "Content-Type": "application/json" });
-                res.write(JSON.stringify({ message: "Failed to update book availability." }));
-                res.end();
-                return;
+                throw new Error("Failed to update book availability");
             }
 
             
@@ -106,7 +100,7 @@ const loanBook = async (req, res) => {
         } catch (err) {
             console.log("Error during loanBook process:", err.message);
             res.writeHead(400, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "Invalid JSON data."}));
+            res.write(JSON.stringify({message: err.message}));
             res.end();
         }
     });
@@ -120,8 +114,6 @@ const returnBook = async (req, res) => {
         // Extract the bookId from the query string
         const parsedUrl = url.parse(req.url, true);
         let bookId = parsedUrl.query.id;
-    
-        bookId = bookId.trim();
     
         // Validate that bookId is provided
         if (!bookId) {
@@ -137,10 +129,10 @@ const returnBook = async (req, res) => {
         }
     
         // Convert bookId to ObjectId
-        bookId = new ObjectId(bookId);
+        bookId = new ObjectId(bookId.trim());
 
         // Find the book by bookId
-        const book = bookModel.findBookById(bookId);
+        const book = await bookModel.findBookById(bookId);
 
         if (!book) {
             res.writeHead(404, { "Content-Type": "application/json" });
