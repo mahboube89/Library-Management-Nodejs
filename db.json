@@ -1,0 +1,258 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice Johnson",
+      "username": "alice123",
+      "email": "A-j@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": 2,
+      "name": "Bob Smith",
+      "username": "bob_smith",
+      "email": "b-s@gmail.com",
+      "penalty": {
+        "reason": "Late return",
+        "fine": 50
+      },
+      "role": "USER"
+    },
+    {
+      "id": 3,
+      "name": "Charlie Davis",
+      "username": "charlie_d",
+      "email": "c-d@gmail.com",
+      "penalty": {
+        "reason": "Lost book",
+        "fine": 20
+      },
+      "role": "USER"
+    },
+    {
+      "id": 4,
+      "name": "Diana Clark",
+      "username": "dianaC",
+      "email": "d-c@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": 5,
+      "name": "Eve Martinez",
+      "username": "eve_m",
+      "email": "e-m@gmail.com",
+      "penalty": {
+        "reason": "Damaged book",
+        "fine": 10
+      },
+      "role": "USER"
+    },
+    {
+      "id": 6,
+      "name": "Frank Green",
+      "username": "frank_g",
+      "email": "f-g@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": 7,
+      "name": "Grace Hopper",
+      "username": "graceH",
+      "email": "g-h@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": 8,
+      "name": "Hank Williams",
+      "username": "hank_w",
+      "email": "h-w@gmail.com",
+      "penalty": {
+        "reason": "Late book return",
+        "fine": 3.5
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": 9,
+      "name": "Ivy Stone",
+      "username": "ivyS",
+      "email": "i-s@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "ec16ddd2-fc43-4f07-b1ae-471845ddca9f",
+      "name": "Missy Cooper",
+      "username": "Miss90",
+      "email": "m-c@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "b8ef4c9e-d67f-48ba-9199-2272128a103e",
+      "name": "Jack Thomas",
+      "username": "jack_t",
+      "email": "j-t@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "1ba95a31-1fe9-4b51-ae0f-d35be71c4a51",
+      "name": "Anonymous",
+      "username": "eve_m23",
+      "email": "e-m23@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "name": "Anonymous",
+      "username": "Bibi",
+      "email": "Benyamin@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "bd5a4f44-384e-4ca7-9635-f6550eedfc14",
+      "name": "Anonymous",
+      "username": "graceH",
+      "email": "g-h@gmail.com",
+      "penalty": {
+        "reason": "Late return",
+        "fine": 50
+      },
+      "role": "USER"
+    },
+    {
+      "id": "cee30a07-e2ee-461c-8ea6-48e46017bed5",
+      "name": "Anonymous",
+      "username": "graceH",
+      "email": "g-h@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": "9ed9250d-eca4-435a-b3f2-6ac30941166f",
+      "name": "Anonymous",
+      "username": "amir",
+      "email": "ami-h@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    },
+    {
+      "id": "70a72fd7-0208-40fc-9b53-9a2318b0dd45",
+      "name": "Parisa tabriz",
+      "username": "Pari",
+      "email": "parisa-t@gmail.com",
+      "penalty": {
+        "reason": "None",
+        "fine": 0
+      },
+      "role": "USER"
+    }
+  ],
+  "books": [
+    {
+      "id": "ab0bd44c-f0b0-41e8-926f-eb2feb9c0345",
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "price": 45,
+      "is_available": 1
+    },
+    {
+      "id": "68bb87a9-df97-40b4-b709-677d058e98d8",
+      "title": "1984",
+      "author": "George Orwell",
+      "price": 8.99,
+      "is_available": 1
+    },
+    {
+      "id": "89bb87a9-df97-40b4-b709-677d058e98gt",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "price": 12.5,
+      "is_available": 1
+    },
+    {
+      "id": "a1ea62ab-8478-4013-a63d-acaa15c84a74",
+      "title": "The Catcher in the Rye",
+      "author": "J.D. Salinger",
+      "price": 6.99,
+      "is_available": 1
+    },
+    {
+      "id": 8,
+      "title": "War and Peace",
+      "author": "Leo Tolstoy",
+      "price": 13.99,
+      "is_available": 0
+    }
+  ],
+  "userBookLoans": [
+    {
+      "id": "1cb858ac-8d22-4dcb-bb10-3d63d26e6708",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": "bb5c22ae-1763-4491-be10-4916163bd1cb",
+      "loanDate": "2024-10-16T21:30:41.902Z",
+      "returnDate": "2024-10-30T21:30:41.902Z"
+    },
+    {
+      "id": "a119484d-4c3a-41f5-bab9-29c58581500c",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": "4240b7fd-1a15-4772-bfd8-71e0c98657a0",
+      "loanDate": "2024-10-16T21:32:01.095Z",
+      "returnDate": "2024-10-30T21:32:01.095Z"
+    },
+    {
+      "id": "7ae02bea-2733-4712-9b6f-d505c6374b13",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": 8,
+      "loanDate": "2024-10-17T20:54:58.670Z",
+      "returnDate": "2024-11-01T00:00:00.000Z"
+    },
+    {
+      "id": "959838ce-2266-415e-b78b-b830e25e81fb",
+      "userId": "a37e7ce5-cb15-4220-ae59-51cbba7008af",
+      "bookId": "1ssssfwww22",
+      "loanDate": "2024-10-17T20:55:48.907Z",
+      "returnDate": "2024-10-31T20:55:48.907Z"
+    }
+  ]
+}
