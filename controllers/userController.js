@@ -1,8 +1,26 @@
 "use strict";
 
 const url = require("url");
-const crypto = require("crypto");
 const userModel = require("../models/userModel");
+
+
+// Utility function to parse and validate userId
+const parseUserId = (req, res) => {
+
+    // Extract the userId from the query string
+    const parsedUrl = url.parse(req.url, true);
+    const userId = parsedUrl.query.id;
+    
+    if(!userId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "User ID is required." }));
+        res.end();
+        return null;
+    }
+
+    return userId;
+};
+
 
 
 // Controller function to handle the GET request for fetching all users
@@ -39,10 +57,10 @@ const addUser = async (req, res) => {
 
         try {
             // Parse the incoming JSON data
-            const userData = JSON.parse(user);
+            const {name = "Anonymous", username, email} = JSON.parse(user);
             
             // Validate that 'name' and 'username' are present
-            if (!userData.username || !userData.email) {
+            if (!username || !email) {
                 res.writeHead(400, {"Content-Type": "application/json"});
                 res.write(JSON.stringify({message: "Missing username or email."}));
                 res.end();
@@ -51,8 +69,9 @@ const addUser = async (req, res) => {
 
             // Create a new user object with default values for penalty and role
             const newUser = {
-                ...userData,
-                name: userData.name || "Anonymous",
+                name, // The name with default value if not provided
+                username,
+                email,
                 "role": "USER",
                 "penalty": {"reason": "None","fine": 0},
             };
@@ -124,19 +143,12 @@ const loginUser = async (req, res) => {
 // Controller function to handle the PUT request for updating role to ADMIN
 const makeAdmin = async (req, res) => {
 
-    const parsedUrl = url.parse(req.url, true);
-    const userId = parsedUrl.query.id;
-    
-    if(!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: "User ID is required." }));
-        res.end();
-        return;
-    }
+    const userId = parseUserId(req, res);
+    if(!userId) return;
 
     try {
 
-        const result = await userModel.makeAdmin(userId);
+        await userModel.makeAdmin(userId);
        
         res.writeHead(200, {"Content-Type": "application/json"});
         res.write(
@@ -156,8 +168,8 @@ const makeAdmin = async (req, res) => {
 // Controller function to handle the PUT request for update penalty for a user
 const updatePenalty = async(req, res) => {
 
-    const parsedUrl = url.parse(req.url, true);
-    const userId = parsedUrl.query.id;
+    const userId = parseUserId(req, res);
+    if(!userId) return;
     
     let reqBody = "";
 
@@ -170,10 +182,10 @@ const updatePenalty = async(req, res) => {
         try {
 
             // Parse the incoming JSON data (should contain the 'penalty' object)
-            const penalty = JSON.parse(reqBody).penalty;
+            const {reason , fine} = JSON.parse(reqBody).penalty;
 
             // Ensure penalty data is present and valid
-            if (!penalty || !penalty.reason || penalty.fine === undefined) {
+            if (!reason || fine === undefined) {
                 res.writeHead(400, {"Content-Type": "application/json"});
                 res.write(JSON.stringify({message: "Missing or invalid penalty data."}));
                 res.end();
@@ -213,17 +225,8 @@ const updatePenalty = async(req, res) => {
 // Controller function to handle the PUT request for update penalty for a user
 const updateUserInfo = async(req, res) => {
 
-    // Extract the userId from the query string
-    const parsedUrl = url.parse(req.url, true);
-    const userId = parsedUrl.query.id;
-
-    // Ensure the userId is valid
-    if (!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: "User ID is required." }));
-        res.end();
-        return;
-    }
+    const userId = parseUserId(req, res);
+    if(!userId) return;
 
     // Collect incomming data
     let newUserDatails = "";
@@ -237,9 +240,7 @@ const updateUserInfo = async(req, res) => {
         try {
             
             // Parse and update the user details
-            const userData = JSON.parse(newUserDatails);
-            console.log("userData in reqBody:" ,userData);
-            
+            const userData = JSON.parse(newUserDatails);            
 
             // Ensure at least one field is provided to update
             if (!userData || Object.keys(userData).length === 0) {
@@ -276,18 +277,8 @@ const updateUserInfo = async(req, res) => {
 
 const getUserById = async(req, res) => {
 
-    // Extract the userId from the query string
-    const parsedUrl = url.parse(req.url, true);
-    const userId = parsedUrl.query.id;
-
-    // Ensure the userId is valid
-    if (!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.write(JSON.stringify({ message: "User ID is required." }));
-        res.end();
-        return;
-    }
-
+    const userId = parseUserId(req, res);
+    if(!userId) return;
 
     try {
         // Fetch user by userId from the userModel
