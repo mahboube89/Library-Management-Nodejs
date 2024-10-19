@@ -169,13 +169,11 @@ const editBook = async(req, res) => {
             res.write(JSON.stringify({message: "Book updated successfully.", book: editedBook}));
             res.end();
             
-
         } catch (err) {
             res.writeHead(400, {"Content-Type": "application/json"});
             res.write(JSON.stringify({message: "Invalid JSON data."}));
             res.end();
         }
-
     });
 };
 

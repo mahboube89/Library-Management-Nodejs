@@ -49,16 +49,6 @@ const addUser = async (req, res) => {
                 return; // Stop further execution if validation fails
             }
 
-            // Check if user already exists by username or email
-            const userExist = await userModel.userAlreadyExist(userData.username, userData.email);            
-
-            if(userExist) {
-                res.writeHead(409, {"Content-Type": "application/json"});
-                res.write(JSON.stringify({message: "Username or email already exist."}));
-                res.end();
-                return; // Stop further execution if validation fails
-            }
-
             // Create a new user object with default values for penalty and role
             const newUser = {
                 ...userData,
@@ -79,7 +69,7 @@ const addUser = async (req, res) => {
 
             // Handle JSON parsing errors or other issues
             res.writeHead(400, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({message: "Invalid JSON data"}));
+            res.write(JSON.stringify({message: err.message}));
             res.end();
         };
 
@@ -238,10 +228,75 @@ const updatePenalty = async(req, res) => {
 };
 
 
+// Controller function to handle the PUT request for update penalty for a user
+const updateUserInfo = async(req, res) => {
+
+    // Extract the userId from the query string
+    const parsedUrl = url.parse(req.url, true);
+    const userId = parsedUrl.query.id;
+
+    // Ensure the userId is valid
+    if (!userId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ message: "User ID is required." }));
+        res.end();
+        return;
+    }
+
+    // Collect incomming data
+    let newUserDatails = "";
+
+    req.on("data", (data) => {
+        newUserDatails += data.toString();
+    });
+
+    req.on("end", async() => {
+
+        try {
+            
+            // Parse and update the user details
+            const userData = JSON.parse(newUserDatails);
+            console.log("userData in reqBody:" ,userData);
+            
+
+            // Ensure at least one field is provided to update
+            if (!userData || Object.keys(userData).length === 0) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.write(JSON.stringify({ message: "No user data provided for update." }));
+                res.end();
+                return;
+            }
+
+            // Call the updateUserInfo function from the model and wait for it to complete
+            const updatedUser = await userModel.updateUserInfo(userId, userData);
+            
+            if (updatedUser.matchedCount === 0) {
+                res.writeHead(404, {"Content-Type": "application/json"});
+                res.write(JSON.stringify({message: "User not found."}));
+                res.end();
+                return;
+            }
+
+            // Respond with success message
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.write(JSON.stringify({message: "User updated successfully."}));
+            res.end();
+
+        } catch (error) {
+
+            res.writeHead(400, {"Content-Type": "application/json"});
+            res.write(JSON.stringify({message: error.message}));
+            res.end();
+        }
+    });
+};
+
+
 module.exports = {
     getAllUsers,
     addUser,
     loginUser,
     makeAdmin,
-    updatePenalty
+    updatePenalty,
+    updateUserInfo
 };

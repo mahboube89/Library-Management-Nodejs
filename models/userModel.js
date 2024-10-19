@@ -17,16 +17,22 @@ const getAllUsers = async () => {
 
 
 // Check if a user already exists by username or email
-const userAlreadyExist = async (username, email) => {
+const userAlreadyExist = async (userId, username, email) => {
     
     // Establish connection to the database
     const database = await db();
     const usersCollection = database.collection("users"); // Access the "users" collection
 
+    // Convert the userId to ObjectId
+    const objectId = new ObjectId(userId);
+
     // Find a user with matching username or email
-    return await usersCollection.findOne({
-        $or: [{ usename: username }, { email: email }],
-    });
+    return await usersCollection.findOne(
+        {
+        $or: [{ username: username }, { email: email }],
+        _id: { $ne: objectId }
+        }
+    );
 };
 
 
@@ -36,6 +42,17 @@ const addUser = async (userData) => {
     // Establish connection to the database
     const database = await db();
     const usersCollection = database.collection("users"); // Access the "users" collection
+
+    if (userData.username || userData.email) {
+
+        // Check if the username or email already exists in another user
+        const existingUser = await findUserByUsernameEmail(userData.username, userData.email);
+
+        if (existingUser) {
+            throw new Error('Username or email already exists for another user.');
+        }
+    }
+
 
     // Set the timestamps
     const timestamp = new Date();
@@ -59,10 +76,11 @@ const findUserByUsernameEmail = async (username, email) => {
     const usersCollection = database.collection("users"); // Access the "users" collection
 
     // Find the user by username and email
-    return await usersCollection.findOne({
-        username: username,
-        email: email,
-    });
+    return await usersCollection.findOne(
+        {
+            $or: [ {username: username}, {email: email} ]
+        }
+    );
 };
 
 
@@ -130,6 +148,59 @@ const updatePenalty = async(userId, penalty) => {
 };
 
 
+// Update a user's details
+const updateUserInfo = async(userId, userData) => {
+
+    // Establish connection to the database
+    const database = await db();
+    const usersCollection = database.collection("users"); // Access the "users" collection    
+
+    // Check if the userData contains username or email
+    if (userData.username || userData.email) {
+
+        // Check if the username or email already exists in another user
+        const existingUser = await userAlreadyExist(userId, userData.username, userData.email);
+
+        if (existingUser) {
+            throw new Error('Username or email already exists for another user.');
+        }
+    }
+
+    // Convert the userId to ObjectId
+    const objectId = new ObjectId(userId);
+
+    // Capture the current timestamp for the 'updated_at' field
+    const timestamp = new Date();
+
+    // Build the update data dynamically based on the fields provided
+    const updateFields = { updated_at: timestamp };
+
+    // Check if the userData contains a username, if so, add it to the updateFields object
+    if (userData.username) {
+        updateFields.username = userData.username;
+    }
+
+    // Check if the userData contains an email, if so, add it to the updateFields object
+    if (userData.email) {
+        updateFields.email = userData.email;
+    }
+
+    // Check if the userData contains a name, if so, add it to the updateFields object
+    if (userData.name) {
+        updateFields.name = userData.name;
+    }
+
+    // Update only the provided fields
+    const result = await usersCollection.updateOne(
+        { _id: objectId },
+        { $set: updateFields }
+    );
+    
+    return result;
+    
+};
+
+
 module.exports = {
     getAllUsers,
     userAlreadyExist,
@@ -138,5 +209,6 @@ module.exports = {
     findUserById,
     isAdmin,
     makeAdmin,
-    updatePenalty
+    updatePenalty,
+    updateUserInfo
 };
