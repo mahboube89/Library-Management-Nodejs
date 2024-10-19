@@ -137,6 +137,11 @@ const makeAdmin = async(userId) => {
         { $set: { role: "ADMIN"}}
     );
 
+    // Ensure the operation was successful
+    if (result.matchedCount === 0) {
+        throw new Error("No changes detected.");
+    }
+
     return result;
 };
 
@@ -154,6 +159,11 @@ const updatePenalty = async(userId, penalty) => {
         { _id: objectId},
         { $set: { penalty: penalty , updated_at: new Date() }}
     );
+
+    // Ensure the operation was successful
+    if (result.matchedCount === 0) {
+        throw new Error("No changes detected.");
+    }
 
     return result;
 };
@@ -206,6 +216,11 @@ const updateUserInfo = async(userId, userData) => {
         { _id: objectId },
         { $set: updateFields }
     );
+
+    // Ensure the operation was successful
+    if (result.matchedCount === 0) {
+        throw new Error("No changes detected.");
+    }
     
     return result;
     
